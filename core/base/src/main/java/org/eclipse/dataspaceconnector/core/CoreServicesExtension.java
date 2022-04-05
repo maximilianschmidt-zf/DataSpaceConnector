@@ -36,10 +36,10 @@ import org.eclipse.dataspaceconnector.spi.policy.RuleBindingRegistry;
 import org.eclipse.dataspaceconnector.spi.security.PrivateKeyResolver;
 import org.eclipse.dataspaceconnector.spi.system.BaseExtension;
 import org.eclipse.dataspaceconnector.spi.system.ExecutorInstrumentation;
-import org.eclipse.dataspaceconnector.spi.system.ExecutorInstrumentationImplementation;
 import org.eclipse.dataspaceconnector.spi.system.Hostname;
 import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.Provides;
+import org.eclipse.dataspaceconnector.spi.system.ProvidesDefault;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.system.health.HealthCheckService;
@@ -68,8 +68,8 @@ import static java.util.Optional.ofNullable;
         RemoteMessageDispatcherRegistry.class,
         RetryPolicy.class,
         RuleBindingRegistry.class,
-        ExecutorInstrumentation.class,
 })
+@ProvidesDefault(ExecutorInstrumentation.class)
 public class CoreServicesExtension implements ServiceExtension {
 
     @EdcSetting
@@ -102,8 +102,8 @@ public class CoreServicesExtension implements ServiceExtension {
     /**
      * An optional instrumentor for {@link ExecutorService}. Used by the optional {@code micrometer} module.
      */
-    @Inject(required = false)
-    private ExecutorInstrumentationImplementation executorInstrumentationImplementation;
+//    @Inject(required = false)
+//    private ExecutorInstrumentation executorInstrumentationImplementation;
 
     private HealthCheckServiceImpl healthCheckService;
 
@@ -215,11 +215,14 @@ public class CoreServicesExtension implements ServiceExtension {
         context.registerService(OkHttpClient.class, client);
     }
 
+    @ProvidesDefault(ExecutorInstrumentation.class)
     private ExecutorInstrumentation registerExecutorInstrumentation(ServiceExtensionContext context) {
-        var executorInstrumentation = ofNullable((ExecutorInstrumentation) this.executorInstrumentationImplementation)
-                .orElse(ExecutorInstrumentation.noop());
-        // Register ExecutorImplementation with default noop implementation if none available
-        context.registerService(ExecutorInstrumentation.class, executorInstrumentation);
-        return executorInstrumentation;
+//        if (executorInstrumentationImplementation == null) {
+//            context.registerService(ExecutorInstrumentation.class, ExecutorInstrumentation.noop());
+//        }
+//        return context.getService(ExecutorInstrumentation.class);
+
+        return ExecutorInstrumentation.noop();
     }
+
 }

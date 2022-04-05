@@ -32,6 +32,7 @@ import org.eclipse.dataspaceconnector.spi.system.Feature;
 import org.eclipse.dataspaceconnector.spi.system.MonitorExtension;
 import org.eclipse.dataspaceconnector.spi.system.NullVaultExtension;
 import org.eclipse.dataspaceconnector.spi.system.Provides;
+import org.eclipse.dataspaceconnector.spi.system.ProvidesDefault;
 import org.eclipse.dataspaceconnector.spi.system.Requires;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
@@ -52,6 +53,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -169,10 +171,12 @@ public class ExtensionLoader {
 
     private List<InjectionContainer<ServiceExtension>> sortExtensions(List<ServiceExtension> loadedExtensions) {
         Map<String, List<ServiceExtension>> dependencyMap = new HashMap<>();
+        Map<String, ServiceExtension> defaultDependencyMap = new HashMap<>();
         addDefaultExtensions(loadedExtensions);
 
         // add all provided features to the dependency map
         loadedExtensions.forEach(ext -> getProvidedFeatures(ext).forEach(feature -> dependencyMap.computeIfAbsent(feature, k -> new ArrayList<>()).add(ext)));
+        loadedExtensions.forEach(ext -> getDefaultProvidedFeatures(ext).forEach(feature -> defaultDependencyMap.computeIfAbsent(feature, k -> ext)));
         var sort = new TopologicalSort<ServiceExtension>();
 
         // check if all injected fields are satisfied, collect missing ones and throw exception otherwise
@@ -184,10 +188,25 @@ public class ExtensionLoader {
                     unsatisfiedInjectionPoints.add(injectionPoint);
                 }
             } else {
-                dependencies.forEach(dependency -> sort.addDependency(ext, dependency));
+                dependencies.stream()
+                        .filter(d -> !Objects.equals(d, ext)) // remove dependencies onto oneself
+                        .forEach(dependency -> sort.addDependency(ext, dependency));
             }
         })).collect(Collectors.toList());
 
+        //attempt to restore missing injection points from defaults
+        if (!unsatisfiedInjectionPoints.isEmpty()) {
+            unsatisfiedInjectionPoints.removeIf(ip -> {
+                var dependency = defaultDependencyMap.get(ip.getFeatureName());
+                if (dependency != null) {
+                    sort.addDependency(ip.getInstance(), dependency);
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        //throw an exception if still unsatisfied links
         if (!unsatisfiedInjectionPoints.isEmpty()) {
             var string = "The following injected fields were not provided:\n";
             string += unsatisfiedInjectionPoints.stream().map(InjectionPoint::toString).collect(Collectors.joining("\n"));
@@ -241,6 +260,17 @@ public class ExtensionLoader {
             allProvides.addAll(featureStrings);
         }
         return allProvides;
+    }
+
+    private Set<String> getDefaultProvidedFeatures(ServiceExtension ext) {
+        var allDefault = new HashSet<String>();
+        var providesDefaultAnnotation = ext.getClass().getAnnotation(ProvidesDefault.class);
+        if (providesDefaultAnnotation != null) {
+            var featureStrings = Arrays.stream(providesDefaultAnnotation.value()).map(this::getFeatureValue).collect(Collectors.toSet());
+            allDefault.addAll(featureStrings);
+        }
+
+        return allDefault;
     }
 
     private String getFeatureValue(Class<?> featureClass) {
