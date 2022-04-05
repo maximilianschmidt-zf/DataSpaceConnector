@@ -14,7 +14,6 @@
 
 package org.eclipse.dataspaceconnector.spi.system.injection;
 
-import org.eclipse.dataspaceconnector.spi.system.Feature;
 import org.eclipse.dataspaceconnector.spi.system.Inject;
 
 import java.util.Arrays;
@@ -40,11 +39,7 @@ public class InjectionPointScanner {
     }
 
     private String getFeatureValue(Class<?> featureClass) {
-        var annotation = featureClass.getAnnotation(Feature.class);
-        if (annotation == null) {
-            return featureClass.getName();
-        }
-        return annotation.value();
+        return featureClass.getName();
     }
 
 }

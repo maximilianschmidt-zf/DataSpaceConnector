@@ -17,7 +17,6 @@ package org.eclipse.dataspaceconnector.boot.system;
 import org.eclipse.dataspaceconnector.boot.system.injection.InjectorImpl;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.system.Feature;
 import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
@@ -132,7 +131,6 @@ class InjectorTest {
         private SomeObject someObject;
     }
 
-    @Feature("edc:test:feature:someobject")
     private static class SomeObject {
     }
 

@@ -21,7 +21,6 @@ import java.lang.annotation.Target;
 
 /**
  * Specifies which feature a certain class, package or modules provides.
- * Feature must be namespaced in the form "edc:XXX:YYY:ZZZ".
  * <p>
  * If a referenced feature class is <em>not</em> annotated, the dependency injection mechanism will use the feature's fully
  * qualified class name by default.

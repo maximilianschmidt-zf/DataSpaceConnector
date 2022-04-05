@@ -14,8 +14,6 @@
 
 package org.eclipse.dataspaceconnector.catalog.spi;
 
-import org.eclipse.dataspaceconnector.spi.system.Feature;
-
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,7 +25,6 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Crawlers should not throw exceptions when a crawl process failed, rather the should use the {@link CrawlerErrorHandler} interface!
  */
-@Feature(Crawler.FEATURE)
 public interface Crawler extends Runnable {
     String FEATURE = "edc:catalog:cache:crawler";
 

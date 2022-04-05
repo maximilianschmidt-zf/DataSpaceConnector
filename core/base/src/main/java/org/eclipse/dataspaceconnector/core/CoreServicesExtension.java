@@ -39,7 +39,6 @@ import org.eclipse.dataspaceconnector.spi.system.ExecutorInstrumentation;
 import org.eclipse.dataspaceconnector.spi.system.Hostname;
 import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.Provides;
-import org.eclipse.dataspaceconnector.spi.system.ProvidesDefault;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.system.health.HealthCheckService;
@@ -69,7 +68,6 @@ import static java.util.Optional.ofNullable;
         RetryPolicy.class,
         RuleBindingRegistry.class,
 })
-@ProvidesDefault(ExecutorInstrumentation.class)
 public class CoreServicesExtension implements ServiceExtension {
 
     @EdcSetting
@@ -215,7 +213,6 @@ public class CoreServicesExtension implements ServiceExtension {
         context.registerService(OkHttpClient.class, client);
     }
 
-    @ProvidesDefault(ExecutorInstrumentation.class)
     private ExecutorInstrumentation registerExecutorInstrumentation(ServiceExtensionContext context) {
 //        if (executorInstrumentationImplementation == null) {
 //            context.registerService(ExecutorInstrumentation.class, ExecutorInstrumentation.noop());

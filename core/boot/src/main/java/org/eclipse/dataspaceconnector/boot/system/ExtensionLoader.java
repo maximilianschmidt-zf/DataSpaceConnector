@@ -274,11 +274,7 @@ public class ExtensionLoader {
     }
 
     private String getFeatureValue(Class<?> featureClass) {
-        var annotation = featureClass.getAnnotation(Feature.class);
-        if (annotation == null) {
-            return featureClass.getName();
-        }
-        return annotation.value();
+        return featureClass.getName();
     }
 
     /**
