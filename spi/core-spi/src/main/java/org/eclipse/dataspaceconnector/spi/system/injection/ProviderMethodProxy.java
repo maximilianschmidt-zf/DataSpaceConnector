@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.reflect.Modifier.isPublic;
+
 public class ProviderMethodProxy {
     private final ServiceExtension target;
 
@@ -48,6 +50,7 @@ public class ProviderMethodProxy {
     private Set<Method> getProviderMethods(ServiceExtension extension) {
         var methods = Arrays.stream(extension.getClass().getMethods())
                 .filter(m -> m.getAnnotation(Provider.class) != null)
+                .filter(m -> isPublic(m.getModifiers()))
                 .collect(Collectors.toSet());
 
         if (methods.stream().anyMatch(m -> m.getReturnType() == Void.class)) {
