@@ -104,6 +104,8 @@ public class CoreServicesExtension implements ServiceExtension {
     private ExecutorInstrumentation executorInstrumentation;
 
     private HealthCheckServiceImpl healthCheckService;
+    private RuleBindingRegistryImpl ruleBindingRegistry;
+    private ScopeFilter scopeFilter;
 
     @Override
     public String name() {
@@ -112,7 +114,6 @@ public class CoreServicesExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        addHttpClient(context);
         registerParser(context);
         var config = getHealthCheckConfig(context);
 
@@ -120,27 +121,12 @@ public class CoreServicesExtension implements ServiceExtension {
         healthCheckService = new HealthCheckServiceImpl(config, executorInstrumentation);
         context.registerService(HealthCheckService.class, healthCheckService);
 
-        // remote message dispatcher registry
-        var dispatcherRegistry = new RemoteMessageDispatcherRegistryImpl();
-        context.registerService(RemoteMessageDispatcherRegistry.class, dispatcherRegistry);
+        ruleBindingRegistry = new RuleBindingRegistryImpl();
 
-        context.registerService(CommandHandlerRegistry.class, new CommandHandlerRegistryImpl());
-
-        var agentService = new ParticipantAgentServiceImpl();
-        context.registerService(ParticipantAgentService.class, agentService);
-
-        var bindingRegistry = new RuleBindingRegistryImpl();
-        context.registerService(RuleBindingRegistry.class, bindingRegistry);
-
-        var scopeFilter = new ScopeFilter(bindingRegistry);
+        scopeFilter = new ScopeFilter(ruleBindingRegistry);
 
         var typeManager = context.getTypeManager();
         PolicyRegistrationTypes.TYPES.forEach(typeManager::registerTypes);
-
-        var policyEngine = new PolicyEngineImpl(scopeFilter);
-        context.registerService(PolicyEngine.class, policyEngine);
-
-        registerHostname(context);
     }
 
     @Override
@@ -154,7 +140,7 @@ public class CoreServicesExtension implements ServiceExtension {
         ServiceExtension.super.shutdown();
     }
 
-    @Provider(isDefault = false)
+    @Provider
     public RetryPolicy<?> retryPolicy(ServiceExtensionContext context) {
         var maxRetries = context.getSetting(MAX_RETRIES, 5);
         var minBackoff = context.getSetting(BACKOFF_MIN_MILLIS, 500);
@@ -163,6 +149,55 @@ public class CoreServicesExtension implements ServiceExtension {
         return new RetryPolicy<>()
                 .withMaxRetries(maxRetries)
                 .withBackoff(minBackoff, maxBackoff, ChronoUnit.MILLIS);
+    }
+
+    @Provider
+    public Hostname hostname(ServiceExtensionContext context) {
+        var hostname = context.getSetting(HOSTNAME_SETTING, DEFAULT_HOSTNAME);
+        if (DEFAULT_HOSTNAME.equals(hostname)) {
+            context.getMonitor().warning(String.format("Settings: No setting found for key '%s'. Using default value '%s'", HOSTNAME_SETTING, DEFAULT_HOSTNAME));
+        }
+        return () -> hostname;
+    }
+
+    @Provider
+    public RemoteMessageDispatcherRegistry remoteMessageDispatcherRegistry() {
+        return new RemoteMessageDispatcherRegistryImpl();
+    }
+
+    @Provider
+    public CommandHandlerRegistry commandHandlerRegistry() {
+        return new CommandHandlerRegistryImpl();
+    }
+
+    @Provider
+    public ParticipantAgentService participantAgentService() {
+        return new ParticipantAgentServiceImpl();
+    }
+
+    @Provider
+    public RuleBindingRegistry ruleBindingRegistry() {
+
+        return ruleBindingRegistry;
+    }
+
+    @Provider
+    public PolicyEngine policyEngine() {
+        return new PolicyEngineImpl(scopeFilter);
+    }
+
+    @Provider
+    public OkHttpClient addHttpClient(ServiceExtensionContext context) {
+        var builder = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS);
+
+        ofNullable(okHttpEventListener).ifPresent(builder::eventListener);
+
+        var client = builder.build();
+
+        context.registerService(OkHttpClient.class, client);
+        return client;
     }
 
     private HealthCheckServiceConfiguration getHealthCheckConfig(ServiceExtensionContext context) {
@@ -176,14 +211,6 @@ public class CoreServicesExtension implements ServiceExtension {
                 .build();
     }
 
-    private void registerHostname(ServiceExtensionContext context) {
-        var hostname = context.getSetting(HOSTNAME_SETTING, DEFAULT_HOSTNAME);
-        if (DEFAULT_HOSTNAME.equals(hostname)) {
-            context.getMonitor().warning(String.format("Settings: No setting found for key '%s'. Using default value '%s'", HOSTNAME_SETTING, DEFAULT_HOSTNAME));
-        }
-        context.registerService(Hostname.class, () -> hostname);
-    }
-
     private void registerParser(ServiceExtensionContext context) {
         var resolver = context.getService(PrivateKeyResolver.class);
         resolver.addParser(PrivateKey.class, encoded -> {
@@ -194,32 +221,6 @@ public class CoreServicesExtension implements ServiceExtension {
                 throw new EdcException(e);
             }
         });
-    }
-
-    private void addRetryPolicy(ServiceExtensionContext context) {
-
-        var maxRetries = context.getSetting(MAX_RETRIES, 5);
-        var minBackoff = context.getSetting(BACKOFF_MIN_MILLIS, 500);
-        var maxBackoff = context.getSetting(BACKOFF_MAX_MILLIS, 10_000);
-
-        var retryPolicy = new RetryPolicy<>()
-                .withMaxRetries(maxRetries)
-                .withBackoff(minBackoff, maxBackoff, ChronoUnit.MILLIS);
-
-        context.registerService(RetryPolicy.class, retryPolicy);
-
-    }
-
-    private void addHttpClient(ServiceExtensionContext context) {
-        var builder = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS);
-
-        ofNullable(okHttpEventListener).ifPresent(builder::eventListener);
-
-        var client = builder.build();
-
-        context.registerService(OkHttpClient.class, client);
     }
 
 }

@@ -18,7 +18,7 @@ import org.eclipse.dataspaceconnector.spi.system.ExecutorInstrumentation;
 import org.eclipse.dataspaceconnector.spi.system.Provider;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 
-public class FoobarExtension implements ServiceExtension {
+public class DefaultServiceProviderExtension implements ServiceExtension {
 
     @Provider(isDefault = true)
     public ExecutorInstrumentation registerExecutorInstrumentation() {

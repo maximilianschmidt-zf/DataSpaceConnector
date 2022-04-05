@@ -90,6 +90,7 @@ public class ExtensionLoader {
             }
             monitor.info("Initialized " + container.getInjectionTarget().name());
 
+            // invoke provider methods, register whatever they return
             scanProviders(container.getInjectionTarget())
                     .thenInvoke()
                     .andRegister(context);

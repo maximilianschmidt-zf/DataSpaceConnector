@@ -13,4 +13,4 @@
 #
 
 org.eclipse.dataspaceconnector.core.CoreServicesExtension
-org.eclipse.dataspaceconnector.core.FoobarExtension
+org.eclipse.dataspaceconnector.core.DefaultServiceProviderExtension

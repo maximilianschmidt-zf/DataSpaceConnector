@@ -35,5 +35,5 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Provider {
-    boolean isDefault();
+    boolean isDefault() default false;
 }
