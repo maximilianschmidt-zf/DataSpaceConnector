@@ -98,6 +98,11 @@ public class DefaultServiceExtensionContext implements ServiceExtensionContext {
 
     @Override
     public <T> void registerService(Class<T> type, T service) {
+        registerServiceRaw(type, service);
+    }
+
+    @Override
+    public void registerServiceRaw(Class<?> type, Object service) {
         if (hasService(type)) {
             monitor.warning("A service of the type " + type.getCanonicalName() + " was already registered and has now been replaced");
         }

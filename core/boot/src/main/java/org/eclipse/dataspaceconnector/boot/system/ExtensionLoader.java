@@ -28,11 +28,9 @@ import org.eclipse.dataspaceconnector.spi.security.PrivateKeyResolver;
 import org.eclipse.dataspaceconnector.spi.security.Vault;
 import org.eclipse.dataspaceconnector.spi.system.BaseExtension;
 import org.eclipse.dataspaceconnector.spi.system.CoreExtension;
-import org.eclipse.dataspaceconnector.spi.system.Feature;
 import org.eclipse.dataspaceconnector.spi.system.MonitorExtension;
 import org.eclipse.dataspaceconnector.spi.system.NullVaultExtension;
 import org.eclipse.dataspaceconnector.spi.system.Provides;
-import org.eclipse.dataspaceconnector.spi.system.ProvidesDefault;
 import org.eclipse.dataspaceconnector.spi.system.Requires;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
@@ -46,6 +44,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,6 +59,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static org.eclipse.dataspaceconnector.spi.system.injection.ProviderMethodProxy.scanProviders;
 
 public class ExtensionLoader {
 
@@ -78,7 +78,10 @@ public class ExtensionLoader {
         var injector = new InjectorImpl();
 
         containers.forEach(container -> {
+            // satisfy injection points
             injector.inject(container, context);
+
+            // call initialize
             container.getInjectionTarget().initialize(context);
             //todo: add verification here, that every @Provides corresponds to a .registerService call
             var result = container.validate(context);
@@ -86,6 +89,10 @@ public class ExtensionLoader {
                 monitor.warning(format("There were missing service registrations in extension %s: %s", container.getInjectionTarget().getClass(), String.join(", ", result.getFailureMessages())));
             }
             monitor.info("Initialized " + container.getInjectionTarget().name());
+
+            scanProviders(container.getInjectionTarget())
+                    .thenInvoke()
+                    .andRegister(context);
         });
 
         containers.forEach(extension -> {
@@ -93,6 +100,7 @@ public class ExtensionLoader {
             monitor.info("Started " + extension.getInjectionTarget().name());
         });
     }
+
 
     /**
      * Loads a vault extension.
@@ -243,7 +251,7 @@ public class ExtensionLoader {
         var requiresAnnotation = clazz.getAnnotation(Requires.class);
         if (requiresAnnotation != null) {
             var features = requiresAnnotation.value();
-            return Stream.of(features).map(this::getFeatureValue).collect(Collectors.toSet());
+            return Stream.of(features).map(Class::getName).collect(Collectors.toSet());
         }
         return Collections.emptySet();
     }
@@ -254,27 +262,22 @@ public class ExtensionLoader {
     private Set<String> getProvidedFeatures(ServiceExtension ext) {
         var allProvides = new HashSet<String>();
 
+        // check all @Provides
         var providesAnnotation = ext.getClass().getAnnotation(Provides.class);
         if (providesAnnotation != null) {
-            var featureStrings = Arrays.stream(providesAnnotation.value()).map(this::getFeatureValue).collect(Collectors.toSet());
+            var featureStrings = Arrays.stream(providesAnnotation.value()).map(Class::getName).collect(Collectors.toSet());
             allProvides.addAll(featureStrings);
         }
+        // check all @Provider methods
+        allProvides.addAll(scanProviders(ext).providerMethods().stream().map(Method::getReturnType).map(Class::getName).collect(Collectors.toSet()));
         return allProvides;
     }
 
     private Set<String> getDefaultProvidedFeatures(ServiceExtension ext) {
-        var allDefault = new HashSet<String>();
-        var providesDefaultAnnotation = ext.getClass().getAnnotation(ProvidesDefault.class);
-        if (providesDefaultAnnotation != null) {
-            var featureStrings = Arrays.stream(providesDefaultAnnotation.value()).map(this::getFeatureValue).collect(Collectors.toSet());
-            allDefault.addAll(featureStrings);
-        }
-
-        return allDefault;
-    }
-
-    private String getFeatureValue(Class<?> featureClass) {
-        return featureClass.getName();
+        return scanProviders(ext).defaultProviderMethods().stream()
+                .map(Method::getReturnType)
+                .map(Class::getName)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -282,7 +285,6 @@ public class ExtensionLoader {
      */
     private Set<InjectionPoint<ServiceExtension>> getInjectedFields(ServiceExtension ext) {
         // initialize with legacy list
-
         return injectionPointScanner.getInjectionPoints(ext);
     }
 

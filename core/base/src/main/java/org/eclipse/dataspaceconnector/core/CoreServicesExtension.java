@@ -38,6 +38,7 @@ import org.eclipse.dataspaceconnector.spi.system.BaseExtension;
 import org.eclipse.dataspaceconnector.spi.system.ExecutorInstrumentation;
 import org.eclipse.dataspaceconnector.spi.system.Hostname;
 import org.eclipse.dataspaceconnector.spi.system.Inject;
+import org.eclipse.dataspaceconnector.spi.system.Provider;
 import org.eclipse.dataspaceconnector.spi.system.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
@@ -65,7 +66,6 @@ import static java.util.Optional.ofNullable;
         ParticipantAgentService.class,
         PolicyEngine.class,
         RemoteMessageDispatcherRegistry.class,
-        RetryPolicy.class,
         RuleBindingRegistry.class,
 })
 public class CoreServicesExtension implements ServiceExtension {
@@ -100,8 +100,8 @@ public class CoreServicesExtension implements ServiceExtension {
     /**
      * An optional instrumentor for {@link ExecutorService}. Used by the optional {@code micrometer} module.
      */
-//    @Inject(required = false)
-//    private ExecutorInstrumentation executorInstrumentationImplementation;
+    @Inject
+    private ExecutorInstrumentation executorInstrumentation;
 
     private HealthCheckServiceImpl healthCheckService;
 
@@ -113,9 +113,7 @@ public class CoreServicesExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         addHttpClient(context);
-        addRetryPolicy(context);
         registerParser(context);
-        var executorInstrumentation = registerExecutorInstrumentation(context);
         var config = getHealthCheckConfig(context);
 
         // health check service
@@ -154,6 +152,17 @@ public class CoreServicesExtension implements ServiceExtension {
     public void shutdown() {
         healthCheckService.stop();
         ServiceExtension.super.shutdown();
+    }
+
+    @Provider(isDefault = false)
+    public RetryPolicy<?> retryPolicy(ServiceExtensionContext context) {
+        var maxRetries = context.getSetting(MAX_RETRIES, 5);
+        var minBackoff = context.getSetting(BACKOFF_MIN_MILLIS, 500);
+        var maxBackoff = context.getSetting(BACKOFF_MAX_MILLIS, 10_000);
+
+        return new RetryPolicy<>()
+                .withMaxRetries(maxRetries)
+                .withBackoff(minBackoff, maxBackoff, ChronoUnit.MILLIS);
     }
 
     private HealthCheckServiceConfiguration getHealthCheckConfig(ServiceExtensionContext context) {
@@ -211,15 +220,6 @@ public class CoreServicesExtension implements ServiceExtension {
         var client = builder.build();
 
         context.registerService(OkHttpClient.class, client);
-    }
-
-    private ExecutorInstrumentation registerExecutorInstrumentation(ServiceExtensionContext context) {
-//        if (executorInstrumentationImplementation == null) {
-//            context.registerService(ExecutorInstrumentation.class, ExecutorInstrumentation.noop());
-//        }
-//        return context.getService(ExecutorInstrumentation.class);
-
-        return ExecutorInstrumentation.noop();
     }
 
 }
