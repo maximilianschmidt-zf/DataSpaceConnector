@@ -17,40 +17,40 @@ package org.eclipse.dataspaceconnector.spi.system.injection;
 import org.eclipse.dataspaceconnector.spi.system.Provider;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.reflect.Modifier.isPublic;
 
-public class ProviderMethodProxy {
+public class ProviderMethodScanner {
     private final ServiceExtension target;
 
-    private ProviderMethodProxy(ServiceExtension target) {
+    private ProviderMethodScanner(ServiceExtension target) {
         this.target = target;
     }
 
-    public static ProviderMethodProxy scanProviders(ServiceExtension target) {
-        return new ProviderMethodProxy(target);
+    public static ProviderMethodScanner scanProviders(ServiceExtension target) {
+        return new ProviderMethodScanner(target);
     }
 
-    public ProviderMethodInvoker thenInvoke() {
-        return new ProviderMethodInvoker(getProviderMethods(target), target);
+    public Set<ProviderMethod> scan() {
+        return getProviderMethods(target);
     }
 
-    public Set<Method> providerMethods() {
-        return getProviderMethods(target).stream().filter(m -> !isDefaultProvider(m)).collect(Collectors.toSet());
+    public Set<ProviderMethod> providerMethods() {
+        return getProviderMethods(target).stream().filter(pm -> !pm.isDefault()).collect(Collectors.toSet());
     }
 
-    public Set<Method> defaultProviderMethods() {
-        return getProviderMethods(target).stream().filter(this::isDefaultProvider).collect(Collectors.toSet());
+    public Set<ProviderMethod> defaultProviderMethods() {
+        return getProviderMethods(target).stream().filter(ProviderMethod::isDefault).collect(Collectors.toSet());
     }
 
-    private Set<Method> getProviderMethods(ServiceExtension extension) {
+    private Set<ProviderMethod> getProviderMethods(ServiceExtension extension) {
         var methods = Arrays.stream(extension.getClass().getMethods())
                 .filter(m -> m.getAnnotation(Provider.class) != null)
                 .filter(m -> isPublic(m.getModifiers()))
+                .map(ProviderMethod::new)
                 .collect(Collectors.toSet());
 
         if (methods.stream().anyMatch(m -> m.getReturnType() == Void.class)) {
@@ -59,7 +59,4 @@ public class ProviderMethodProxy {
         return methods;
     }
 
-    private boolean isDefaultProvider(Method m) {
-        return m.getAnnotation(Provider.class).isDefault();
-    }
 }

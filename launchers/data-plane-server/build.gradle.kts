@@ -25,7 +25,7 @@ dependencies {
     implementation(project(":spi:web-spi"))
     implementation(project(":core:base"))
     implementation(project(":core:boot"))
-//    implementation(project(":core:micrometer"))
+    implementation(project(":core:micrometer"))
     implementation(project(":extensions:http"))
     implementation(project(":extensions:filesystem:configuration-fs"))
     implementation(project(":extensions:data-plane:data-plane-spi"))

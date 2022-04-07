@@ -39,12 +39,12 @@ import org.eclipse.dataspaceconnector.spi.system.injection.EdcInjectionException
 import org.eclipse.dataspaceconnector.spi.system.injection.InjectionContainer;
 import org.eclipse.dataspaceconnector.spi.system.injection.InjectionPoint;
 import org.eclipse.dataspaceconnector.spi.system.injection.InjectionPointScanner;
+import org.eclipse.dataspaceconnector.spi.system.injection.ProviderMethod;
 import org.eclipse.dataspaceconnector.spi.telemetry.Telemetry;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static org.eclipse.dataspaceconnector.spi.system.injection.ProviderMethodProxy.scanProviders;
+import static org.eclipse.dataspaceconnector.spi.system.injection.ProviderMethodScanner.scanProviders;
 
 public class ExtensionLoader {
 
@@ -82,18 +82,19 @@ public class ExtensionLoader {
             injector.inject(container, context);
 
             // call initialize
-            container.getInjectionTarget().initialize(context);
+            ServiceExtension target = container.getInjectionTarget();
+            target.initialize(context);
             //todo: add verification here, that every @Provides corresponds to a .registerService call
             var result = container.validate(context);
             if (!result.succeeded()) {
-                monitor.warning(format("There were missing service registrations in extension %s: %s", container.getInjectionTarget().getClass(), String.join(", ", result.getFailureMessages())));
+                monitor.warning(format("There were missing service registrations in extension %s: %s", target.getClass(), String.join(", ", result.getFailureMessages())));
             }
-            monitor.info("Initialized " + container.getInjectionTarget().name());
+            monitor.info("Initialized " + target.name());
 
             // invoke provider methods, register whatever they return
-            scanProviders(container.getInjectionTarget())
-                    .thenInvoke()
-                    .andRegister(context);
+            scanProviders(target)
+                    .scan()
+                    .forEach(pm -> invokeProviderMethod(pm, target, context));
         });
 
         containers.forEach(extension -> {
@@ -102,6 +103,13 @@ public class ExtensionLoader {
         });
     }
 
+    private static void invokeProviderMethod(ProviderMethod m, ServiceExtension target, ServiceExtensionContext context) {
+        var type = m.getReturnType();
+        var res = m.invoke(target, context);
+
+        //todo: only register default provider if needed
+        context.registerServiceRaw(type, res);
+    }
 
     /**
      * Loads a vault extension.
@@ -270,13 +278,13 @@ public class ExtensionLoader {
             allProvides.addAll(featureStrings);
         }
         // check all @Provider methods
-        allProvides.addAll(scanProviders(ext).providerMethods().stream().map(Method::getReturnType).map(Class::getName).collect(Collectors.toSet()));
+        allProvides.addAll(scanProviders(ext).providerMethods().stream().map(ProviderMethod::getReturnType).map(Class::getName).collect(Collectors.toSet()));
         return allProvides;
     }
 
     private Set<String> getDefaultProvidedFeatures(ServiceExtension ext) {
         return scanProviders(ext).defaultProviderMethods().stream()
-                .map(Method::getReturnType)
+                .map(ProviderMethod::getReturnType)
                 .map(Class::getName)
                 .collect(Collectors.toSet());
     }

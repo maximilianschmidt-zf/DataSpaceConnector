@@ -100,7 +100,7 @@ public class CoreServicesExtension implements ServiceExtension {
     /**
      * An optional instrumentor for {@link ExecutorService}. Used by the optional {@code micrometer} module.
      */
-    @Inject
+    @Inject(required = false)
     private ExecutorInstrumentation executorInstrumentation;
 
     private HealthCheckServiceImpl healthCheckService;
@@ -116,6 +116,8 @@ public class CoreServicesExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         registerParser(context);
         var config = getHealthCheckConfig(context);
+
+        executorInstrumentation = ofNullable(executorInstrumentation).orElseGet(() -> defaultInstrumentation());
 
         // health check service
         healthCheckService = new HealthCheckServiceImpl(config, executorInstrumentation);
@@ -138,6 +140,11 @@ public class CoreServicesExtension implements ServiceExtension {
     public void shutdown() {
         healthCheckService.stop();
         ServiceExtension.super.shutdown();
+    }
+
+    @Provider(isDefault = true)
+    public ExecutorInstrumentation defaultInstrumentation() {
+        return ExecutorInstrumentation.noop();
     }
 
     @Provider
