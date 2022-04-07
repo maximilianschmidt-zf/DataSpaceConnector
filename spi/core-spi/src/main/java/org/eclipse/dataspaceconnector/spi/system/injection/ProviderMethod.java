@@ -20,13 +20,15 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import static java.util.Optional.ofNullable;
+
 public class ProviderMethod {
     private final Method method;
     private final boolean isDefault;
 
     public ProviderMethod(Method method) {
         this.method = method;
-        isDefault = method.getAnnotation(Provider.class).isDefault();
+        isDefault = ofNullable(method.getAnnotation(Provider.class)).map(Provider::isDefault).orElse(false);
     }
 
     public Method getMethod() {
