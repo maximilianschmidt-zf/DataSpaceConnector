@@ -117,7 +117,7 @@ public class CoreServicesExtension implements ServiceExtension {
         registerParser(context);
         var config = getHealthCheckConfig(context);
 
-        executorInstrumentation = ofNullable(executorInstrumentation).orElseGet(() -> defaultInstrumentation());
+        executorInstrumentation = ofNullable(executorInstrumentation).orElseGet(ExecutorInstrumentation::noop);
 
         // health check service
         healthCheckService = new HealthCheckServiceImpl(config, executorInstrumentation);
@@ -144,7 +144,7 @@ public class CoreServicesExtension implements ServiceExtension {
 
     @Provider(isDefault = true)
     public ExecutorInstrumentation defaultInstrumentation() {
-        return ExecutorInstrumentation.noop();
+        return executorInstrumentation;
     }
 
     @Provider

@@ -91,7 +91,7 @@ public class ExtensionLoader {
             }
             monitor.info("Initialized " + target.name());
 
-            // invoke provider methods, register whatever they return
+            // invoke provider methods, register the service they return
             scanProviders(target)
                     .scan()
                     .forEach(pm -> invokeProviderMethod(pm, target, context));
@@ -105,10 +105,11 @@ public class ExtensionLoader {
 
     private static void invokeProviderMethod(ProviderMethod m, ServiceExtension target, ServiceExtensionContext context) {
         var type = m.getReturnType();
-        var res = m.invoke(target, context);
 
-        //todo: only register default provider if needed
-        context.registerServiceRaw(type, res);
+        if (!m.isDefault() || (m.isDefault() && !context.hasService(type))) {
+            var res = m.invoke(target, context);
+            context.registerServiceRaw(type, res);
+        }
     }
 
     /**
@@ -188,12 +189,11 @@ public class ExtensionLoader {
 
     private List<InjectionContainer<ServiceExtension>> sortExtensions(List<ServiceExtension> loadedExtensions) {
         Map<String, List<ServiceExtension>> dependencyMap = new HashMap<>();
-        Map<String, ServiceExtension> defaultDependencyMap = new HashMap<>();
         addDefaultExtensions(loadedExtensions);
 
         // add all provided features to the dependency map
+        loadedExtensions.forEach(ext -> getDefaultProvidedFeatures(ext).forEach(feature -> dependencyMap.computeIfAbsent(feature, k -> new ArrayList<>()).add(ext)));
         loadedExtensions.forEach(ext -> getProvidedFeatures(ext).forEach(feature -> dependencyMap.computeIfAbsent(feature, k -> new ArrayList<>()).add(ext)));
-        loadedExtensions.forEach(ext -> getDefaultProvidedFeatures(ext).forEach(feature -> defaultDependencyMap.computeIfAbsent(feature, k -> ext)));
         var sort = new TopologicalSort<ServiceExtension>();
 
         // check if all injected fields are satisfied, collect missing ones and throw exception otherwise
@@ -210,18 +210,6 @@ public class ExtensionLoader {
                         .forEach(dependency -> sort.addDependency(ext, dependency));
             }
         })).collect(Collectors.toList());
-
-        //attempt to restore missing injection points from defaults
-        if (!unsatisfiedInjectionPoints.isEmpty()) {
-            unsatisfiedInjectionPoints.removeIf(ip -> {
-                var dependency = defaultDependencyMap.get(ip.getFeatureName());
-                if (dependency != null) {
-                    sort.addDependency(ip.getInstance(), dependency);
-                    return true;
-                }
-                return false;
-            });
-        }
 
         //throw an exception if still unsatisfied links
         if (!unsatisfiedInjectionPoints.isEmpty()) {
