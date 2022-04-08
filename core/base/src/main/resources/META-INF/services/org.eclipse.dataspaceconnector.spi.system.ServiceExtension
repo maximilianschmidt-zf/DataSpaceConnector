@@ -13,4 +13,3 @@
 #
 
 org.eclipse.dataspaceconnector.core.CoreServicesExtension
-org.eclipse.dataspaceconnector.core.DefaultServiceProviderExtension

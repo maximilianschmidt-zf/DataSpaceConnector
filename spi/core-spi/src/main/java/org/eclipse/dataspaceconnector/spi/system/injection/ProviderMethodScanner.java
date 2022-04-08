@@ -34,27 +34,29 @@ public class ProviderMethodScanner {
         return new ProviderMethodScanner(target);
     }
 
-    public Set<ProviderMethod> scan() {
+    public Set<ProviderMethod> all() {
         return getProviderMethods(target);
     }
 
-    public Set<ProviderMethod> providerMethods() {
+    public Set<ProviderMethod> nonDefaultProviders() {
         return getProviderMethods(target).stream().filter(pm -> !pm.isDefault()).collect(Collectors.toSet());
     }
 
-    public Set<ProviderMethod> defaultProviderMethods() {
+    public Set<ProviderMethod> defaultProviders() {
         return getProviderMethods(target).stream().filter(ProviderMethod::isDefault).collect(Collectors.toSet());
     }
 
     private Set<ProviderMethod> getProviderMethods(ServiceExtension extension) {
-        var methods = Arrays.stream(extension.getClass().getMethods())
+        var methods = Arrays.stream(extension.getClass().getDeclaredMethods())
                 .filter(m -> m.getAnnotation(Provider.class) != null)
-                .filter(m -> isPublic(m.getModifiers()))
                 .map(ProviderMethod::new)
                 .collect(Collectors.toSet());
 
-        if (methods.stream().anyMatch(m -> m.getReturnType() == Void.class)) {
+        if (methods.stream().anyMatch(m -> m.getReturnType().equals(Void.TYPE))) {
             throw new EdcInjectionException("Methods annotated with @Provider must have a non-void return type!");
+        }
+        if (methods.stream().anyMatch(m -> !isPublic(m.getMethod().getModifiers()))) {
+            throw new EdcInjectionException("Methods annotated with @Provider must be public!");
         }
         return methods;
     }
