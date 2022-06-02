@@ -1,4 +1,15 @@
-
+/*
+ * Copyright (c) 2022 ZF Friedrichshafen AG
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Contributors:
+ *      ZF Friedrichshafen AG - Initial API and Implementation
+ */
 package org.eclipse.dataspaceconnector.iam.ssi.wallet;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -9,25 +20,27 @@ import org.jetbrains.annotations.NotNull;
 public class ManagedIdentityWalletConfig {
 
     @NotNull
-    private final String walletURL;
+    private String walletURL;
     @NotNull
-    private final String walletJwksURL;
+    private String walletDID;
     @NotNull
-    private final String walletIssuerURL;
+    private String walletJwksURL;
     @NotNull
-    private final String keycloakURL;
+    private String walletIssuerURL;
     @NotNull
-    private final String keycloakClientID;
+    private String keycloakURL;
     @NotNull
-    private final String keycloakClientSecret;
+    private String keycloakClientID;
     @NotNull
-    private final String keycloakGrandType;
+    private String keycloakClientSecret;
     @NotNull
-    private final String keycloakScope;
+    private String keycloakGrandType;
     @NotNull
-    private final String accessTokenURL;
+    private String keycloakScope;
     @NotNull
-    private final String logprefig;
+    private String accessTokenURL;
+    @NotNull
+    private String logprefig;
 
     @Override
     public String toString() {
@@ -45,8 +58,8 @@ public class ManagedIdentityWalletConfig {
                 '}';
     }
 
-    private ManagedIdentityWalletConfig(Builder builder){
-        this.walletURL = builder.walletURL;
+    private ManagedIdentityWalletConfig(){
+        /*this.walletURL = builder.walletURL;
         this.keycloakURL = builder.keycloakURL;
         this.keycloakClientID = builder.keycloakClientID;
         this.keycloakClientSecret = builder.keycloakClientSecret;
@@ -55,12 +68,14 @@ public class ManagedIdentityWalletConfig {
         this.accessTokenURL = builder.accessTokenURL;
         this.logprefig = builder.logprefig;
         this.walletJwksURL = builder.walletJwksURL;
-        this.walletIssuerURL = builder.walletIssuerURL;
+        this.walletIssuerURL = builder.walletIssuerURL;*/
     }
 
     public String getWalletURL() {
         return walletURL;
     }
+
+    public String getWalletDID() { return walletDID; }
 
     public String getWalletJwksURL() {
         return walletJwksURL;
@@ -100,82 +115,68 @@ public class ManagedIdentityWalletConfig {
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder{
-        @NotNull
-        private String walletURL;
-        @NotNull
-        private String keycloakURL;
-        @NotNull
-        private String keycloakClientID;
-        @NotNull
-        private String keycloakClientSecret;
-        @NotNull
-        private String keycloakGrandType;
-        @NotNull
-        private String keycloakScope;
-        @NotNull
-        private String accessTokenURL;
-        @NotNull
-        private String logprefig;
-        @NotNull
-        private String walletJwksURL;
-        @NotNull
-        private String walletIssuerURL;
+        private final ManagedIdentityWalletConfig walletConfig;
 
         public static Builder newInstance(){
             return new Builder();
         }
 
-        public Builder(){
+        private Builder(){
+            walletConfig = new ManagedIdentityWalletConfig();
         }
 
         public Builder accessTokenURL(String accessTokenURL){
-            this.accessTokenURL = accessTokenURL;
+            walletConfig.accessTokenURL = accessTokenURL;
             return this;
         }
 
         public Builder keycloakURL(String keycloakURL){
-            this.keycloakURL = keycloakURL;
+            walletConfig.keycloakURL = keycloakURL;
             return this;
         }
 
         public Builder walletURL(String walletURL){
-            this.walletURL = walletURL;
+            walletConfig.walletURL = walletURL;
+            return this;
+        }
+
+        public Builder walletDID(String walletDID){
+            walletConfig.walletDID = walletDID;
             return this;
         }
 
         public Builder walletJwksURL(String walletJwksURL){
-            this.walletJwksURL = walletJwksURL;
+            walletConfig.walletJwksURL = walletJwksURL;
             return this;
         }
 
         public Builder walletIssuerURL(String walletIssuerURL){
-            this.walletIssuerURL = walletIssuerURL;
+            walletConfig.walletIssuerURL = walletIssuerURL;
             return this;
         }
 
         public Builder keycloakClientID(String keycloakClientID){
-            this.keycloakClientID = keycloakClientID;
+            walletConfig.keycloakClientID = keycloakClientID;
             return this;
         }
 
         public Builder keycloakClientSecret(String keycloakClientSecret){
-            this.keycloakClientSecret = keycloakClientSecret;
+            walletConfig.keycloakClientSecret = keycloakClientSecret;
             return this;
         }
 
         public Builder keycloakGrandType(String keycloakGrandType){
-            this.keycloakGrandType = keycloakGrandType;
+            walletConfig.keycloakGrandType = keycloakGrandType;
             return this;
         }
 
         public Builder keycloakScope(String keycloakScope){
-            this.keycloakScope = keycloakScope;
+            walletConfig.keycloakScope = keycloakScope;
             return this;
         }
 
         public ManagedIdentityWalletConfig build(){
-            ManagedIdentityWalletConfig config = new ManagedIdentityWalletConfig(this);
-            return config;
+            return walletConfig;
         }
     }
 

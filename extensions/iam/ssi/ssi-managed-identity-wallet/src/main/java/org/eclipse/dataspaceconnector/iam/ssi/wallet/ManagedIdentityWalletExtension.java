@@ -15,6 +15,7 @@
 package org.eclipse.dataspaceconnector.iam.ssi.wallet;
 
 //import org.eclipse.dataspaceconnector.iam.ssi.config.ManagedIdentityWalletConfig;
+import okhttp3.OkHttpClient;
 import org.eclipse.dataspaceconnector.api.datamanagement.configuration.DataManagementApiConfiguration;
 import org.eclipse.dataspaceconnector.spi.WebService;
 import org.eclipse.dataspaceconnector.spi.system.Inject;
@@ -31,6 +32,8 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
 
     @Inject
     WebService webService;
+    @Inject
+    private OkHttpClient okHttpClient;
     //@Inject
     //ManagedIdentityWalletConfig walletConfig;
 
@@ -41,9 +44,9 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
      */
     private final String KEYCLOAK_URL = "ssi.miw.keycloak.url";
     private final String KEYCLOAK_USERNAME = "ssi.miw.keycloak.username";
-    private final String KEYCLOAK_CLIENT_ID = "ssi.miw.keycloak.client_id";
-    private final String KEYCLOAK_CLIENT_SECRET = "ssi.miw.keycloak.client_secret";
-    private final String KEYCLOAK_CLIENT_GRAND_TYPE = "ssi.miw.keycloak.grand_type";
+    private final String KEYCLOAK_CLIENT_ID = "ssi.miw.keycloak.clientid";
+    private final String KEYCLOAK_CLIENT_SECRET = "ssi.miw.keycloak.clientsecret";
+    private final String KEYCLOAK_CLIENT_GRAND_TYPE = "ssi.miw.keycloak.grandtype";
     private final String KEYCLOAK_SCOPE = "ssi.miw.keycloak.scope";
 
     /**
@@ -55,27 +58,32 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
      * Connection Settings
      */
     private final String WALLET_URL = "ssi.miw.url";
+    private final String WALLET_DID = "ssi.miw.did";
     private final String WALLET_JWKS_URL = "ssi.miw.url";
     private final String WALLET_ISSUER_URL = "ssi.miw.url";
     @Inject
     DataManagementApiConfiguration config;
 
+    private ManagedIdentityWalletConfig walletConfig;
     @Override
     public void initialize(ServiceExtensionContext context) {
         var logPrefix = context.getSetting(LOG_PREFIX_SETTING, "MIW");
+        var typeManager = context.getTypeManager();
 
-        ManagedIdentityWalletConfig walletConfig = new ManagedIdentityWalletConfig.Builder()
-                .walletURL(context.getConfig(WALLET_URL).toString())
-                .walletJwksURL(context.getConfig(WALLET_JWKS_URL).toString())
-                .walletIssuerURL(context.getConfig(WALLET_ISSUER_URL).toString())
-                .accessTokenURL(context.getConfig(ACCESSTOKEN_URL).toString())
-                .keycloakURL(context.getConfig(KEYCLOAK_URL).toString())
-                .keycloakClientID(context.getConfig(KEYCLOAK_CLIENT_ID).toString())
-                .keycloakClientSecret(context.getConfig(KEYCLOAK_CLIENT_SECRET).toString())
-                .keycloakGrandType(context.getConfig(KEYCLOAK_CLIENT_GRAND_TYPE).toString())
-                .keycloakScope(context.getConfig(KEYCLOAK_SCOPE).toString())
+        ManagedIdentityWalletConfig.Builder walletBuilderConfig = ManagedIdentityWalletConfig.Builder.newInstance();
+        this.walletConfig = walletBuilderConfig.walletURL(context.getConfig().getString(WALLET_URL))
+                .walletDID(context.getConfig().getString(WALLET_DID))
+                .walletJwksURL(context.getConfig().getString(WALLET_JWKS_URL))
+                .walletIssuerURL(context.getConfig().getString(WALLET_ISSUER_URL))
+                .accessTokenURL(context.getConfig().getString(ACCESSTOKEN_URL))
+                .keycloakURL(context.getConfig().getString(KEYCLOAK_URL))
+                .keycloakClientID(context.getConfig().getString(KEYCLOAK_CLIENT_ID))
+                .keycloakClientSecret(context.getConfig().getString(KEYCLOAK_CLIENT_SECRET))
+                .keycloakGrandType(context.getConfig().getString(KEYCLOAK_CLIENT_GRAND_TYPE))
+                .keycloakScope(context.getConfig().getString(KEYCLOAK_SCOPE))
                 .build();
 
-        webService.registerResource(config.getContextAlias(),new ManagedIdentityWalletApiController(context.getMonitor(), logPrefix, walletConfig));
+        webService.registerResource(config.getContextAlias(),
+                new ManagedIdentityWalletApiController(context.getMonitor(), logPrefix, walletConfig, okHttpClient, typeManager));
     }
 }
