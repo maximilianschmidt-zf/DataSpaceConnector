@@ -17,12 +17,10 @@
 rootProject.name = "dataspaceconnector"
 
 // modules for common/util code
-
 include(":common:util")
 include(":common:state-machine-lib")
 include(":common:token-generation-lib")
 include(":common:token-validation-lib")
-
 
 // EDC core modules
 include(":core")
@@ -101,6 +99,7 @@ include(":extensions:iam:decentralized-identity:dummy-credentials-verifier")
 include(":extensions:iam:ssi")
 include(":extensions:iam:ssi:ssi-managed-identity-wallet-configuration")
 include(":extensions:iam:ssi:ssi-managed-identity-wallet")
+include(":extensions:iam:ssi:ssi-identity-service")
 include(":extensions:catalog:federated-catalog-cache")
 include(":extensions:catalog:federated-catalog-spi")
 include(":extensions:transfer-functions:transfer-functions-spi")
@@ -162,7 +161,6 @@ include(":samples:other:dataseed:dataseed-policy")
 include(":samples:other:run-from-junit")
 include(":samples:other:custom-runtime")
 
-
 // extension points for a connector
 include(":spi")
 include(":spi:core-spi")
@@ -172,8 +170,6 @@ include(":spi:catalog-spi")
 include(":spi:web-spi")
 include(":spi:transport-spi")
 include(":spi:policy-spi")
-
-//include(":openapi")
 
 // numbered samples for the onboarding experience
 include(":samples:01-basic-connector")
@@ -202,6 +198,10 @@ include(":samples:05-file-transfer-cloud:provider")
 include(":samples:05-file-transfer-cloud:api")
 include(":samples:05-file-transfer-cloud:data-seeder")
 include(":samples:05-file-transfer-cloud:transfer-file")
+
+include(":samples:06.0-ssi-authentication:consumer")
+include(":samples:06.0-ssi-authentication:provider")
+include(":samples:06.0-ssi-authentication:transfer-file")
 
 include(":system-tests:e2e-transfer-test:runner")
 include(":system-tests:e2e-transfer-test:backend-service")

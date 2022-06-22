@@ -34,8 +34,6 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
     WebService webService;
     @Inject
     private OkHttpClient okHttpClient;
-    //@Inject
-    //ManagedIdentityWalletConfig walletConfig;
 
     private static final String LOG_PREFIX_SETTING = "ssi.miw.logprefix";
 

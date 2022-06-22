@@ -9,6 +9,8 @@
  *
  *  Contributors:
  *       Microsoft Corporation - initial API and implementation
+ *       Fraunhofer Institute for Software and Systems Engineering - added dependencies
+ *       ZF Friedrichshafen AG - add dependency
  *
  */
 
@@ -18,26 +20,22 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
+val jupiterVersion: String by project
+val rsApi: String by project
 
 dependencies {
-    api(project(":spi"))
-    //api(project(":extensions:iam:ssi:ssi-managed-identity-wallet-configuration"))
-    api(project(":extensions:iam:ssi:ssi-managed-identity-wallet"))
-
     implementation(project(":core"))
-    implementation(project(":extensions:api:data-management"))
-    implementation(project(":extensions:filesystem:configuration-fs"))
-    implementation("decentralized-identity:jsonld-common-java:1.0.0")
-    implementation("info.weboftrust:ld-signatures-java:1.0.0")
-    implementation("com.github.multiformats:java-multibase:v1.1.0")
-}
 
-repositories {
-    maven {
-        url = uri("https://repo.danubetech.com/repository/maven-public/")
-    }
-    maven {
-        url = uri("https://jitpack.io/")
+    implementation(project(":extensions:api:observability"))
+
+    implementation(project(":extensions:filesystem:configuration-fs"))
+    implementation(project(":extensions:iam:iam-mock"))
+
+    implementation(project(":extensions:api:auth-tokenbased"))
+    implementation(project(":extensions:api:data-management"))
+
+    implementation(project(":data-protocols:ids")) {
+        exclude("org.eclipse.dataspaceconnector","ids-token-validation")
     }
 }
 
@@ -46,15 +44,7 @@ application {
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    exclude("**/pom.properties", "**/pom.xm")
     mergeServiceFiles()
-    archiveFileName.set("miw.jar")
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("ssi") {
-            artifactId = "ssi"
-            from(components["java"])
-        }
-    }
+    archiveFileName.set("consumer.jar")
 }

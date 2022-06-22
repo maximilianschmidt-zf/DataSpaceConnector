@@ -12,17 +12,12 @@
  */
 package org.eclipse.dataspaceconnector.iam.ssi.wallet;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
+
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
-import org.eclipse.dataspaceconnector.iam.ssi.model.AccessTokenDescription;
+import org.eclipse.dataspaceconnector.iam.ssi.model.AccessTokenDescriptionDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.AccessTokenRequestDto;
-import org.eclipse.dataspaceconnector.iam.ssi.model.Utility;
-import org.eclipse.dataspaceconnector.iam.ssi.model.WalletDescription;
+import org.eclipse.dataspaceconnector.iam.ssi.model.WalletDescriptionDto;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -33,9 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static java.lang.String.format;
 
-@Consumes({MediaType.APPLICATION_JSON})
-@Produces({MediaType.APPLICATION_JSON})
-@Path("ssi")
 public class ManagedIdentityWalletApiController {
 
     private final Monitor monitor;
@@ -69,20 +61,11 @@ public class ManagedIdentityWalletApiController {
         monitor.info(format("%s :: Received a Initialize request with values: " + config.toString(), logPrefix));
     }
 
-    @GET
-    @Path("health")
-    public String checkHealth() {
-        monitor.info(format("%s :: Received a health request with values: " + config.toString(), logPrefix));
-        return "{\"response\":\"I'm alive!\"}";
-    }
-
-    @GET
-    @Path("wallets")
-    public String getWallet(){
+    public String fetchWalletDescription(){
         monitor.info(format("%s :: Received a wallet request", logPrefix));
         var url = config.getWalletURL() + "/api/wallets/" + config.getWalletDID();
-        AccessTokenDescription accessToken = null;
-        WalletDescription walletDescription = null;
+        AccessTokenDescriptionDto accessToken = null;
+        WalletDescriptionDto walletDescriptionDto = null;
         try{
             accessToken = getKeyCloakToken(this.accessTokenRequestDto);
             monitor.severe(format("Fetched AccessToken %s", accessToken.toString()));
@@ -95,18 +78,18 @@ public class ManagedIdentityWalletApiController {
                 if (!response.isSuccessful() || body == null) {
                     throw new InternalServerErrorException(format("Keycloak responded with: %s %s", response.code(), body != null ? body.string() : ""));
                 }
-                walletDescription = objectMapper.readValue(body.string(), WalletDescription.class);
-                monitor.info("Fetched Wallets: " + walletDescription);
+                walletDescriptionDto = objectMapper.readValue(body.string(), WalletDescriptionDto.class);
+                monitor.info("Fetched Wallets: " + walletDescriptionDto);
             } catch (Exception e) {
                 monitor.severe(format("Error by fetching wallets at %s", url), e);
             }
         } catch (Exception e){
             monitor.severe(format("Error in fetching AccessToken"), e);
         }
-        return walletDescription != null ? walletDescription.getName() : "nothing found";
+        return walletDescriptionDto != null ? walletDescriptionDto.getName() : "nothing found";
     }
 
-    public AccessTokenDescription getKeyCloakToken(AccessTokenRequestDto accessTokenRequest) throws IOException {
+    public AccessTokenDescriptionDto getKeyCloakToken(AccessTokenRequestDto accessTokenRequest) throws IOException {
         var url = config.getKeycloakURL();
         RequestBody formBody = new FormBody.Builder()
                 .add("grant_type", accessTokenRequest.getGrantType())
@@ -123,7 +106,7 @@ public class ManagedIdentityWalletApiController {
             if (!response.isSuccessful() || body == null) {
                 throw new InternalServerErrorException(format("Keycloak responded with: %s %s", response.code(), body != null ? body.string() : ""));
             }
-            var accessTokenDescription = objectMapper.readValue(body.string(), AccessTokenDescription.class);
+            var accessTokenDescription = objectMapper.readValue(body.string(), AccessTokenDescriptionDto.class);
             monitor.info("Get new token with ID: " + accessTokenDescription.getTokenID());
             return accessTokenDescription;
         } catch (Exception e) {
@@ -132,7 +115,3 @@ public class ManagedIdentityWalletApiController {
         }
     }
 }
-//"https://httpbin.org/post";
-//                .header("Connection", "keep-alive")
-//                .header("Accept-Encoding", "gzip,deflate")
-//                .header("Accept", "*/*")
