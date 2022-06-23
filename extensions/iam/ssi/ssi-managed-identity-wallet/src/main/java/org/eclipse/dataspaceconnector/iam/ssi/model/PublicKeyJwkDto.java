@@ -11,7 +11,10 @@
  *      ZF Friedrichshafen AG - Initial API and Implementation
  */
 
-package org.eclipse.dataspaceconnector.iam.ssi.core.models;
+package org.eclipse.dataspaceconnector.iam.ssi.model;
 
-public class DidDocument {
+public class PublicKeyJwkDto {
+
+
+
 }

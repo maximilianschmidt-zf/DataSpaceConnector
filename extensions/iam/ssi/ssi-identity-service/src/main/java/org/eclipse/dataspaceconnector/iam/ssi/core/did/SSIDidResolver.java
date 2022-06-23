@@ -13,10 +13,8 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.did;
 
-import org.eclipse.dataspaceconnector.iam.ssi.core.models.DidDocument;
-
 public interface SSIDidResolver {
 
-  DidDocument resolveDid(String did);
+  DidDocumentDto resolveDid(String did);
 
 }

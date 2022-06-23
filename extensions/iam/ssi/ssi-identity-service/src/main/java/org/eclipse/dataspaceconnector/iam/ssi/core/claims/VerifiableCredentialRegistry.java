@@ -13,11 +13,11 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
-import com.danubetech.verifiablecredentials.VerifiableCredential;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 
 public interface VerifiableCredentialRegistry {
 
-  void addVerifableCredential(VerifiableCredential vc);
+  void addVerifableCredential(VerifiableCredentialDto vc);
 
-  VerifiableCredential getVerifiableCredential(String name);
+  VerifiableCredentialDto getVerifiableCredential(String name);
 }

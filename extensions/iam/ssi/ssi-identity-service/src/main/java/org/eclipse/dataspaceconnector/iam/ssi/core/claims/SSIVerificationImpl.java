@@ -13,17 +13,17 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
-import com.danubetech.verifiablecredentials.VerifiableCredential;
-import com.danubetech.verifiablecredentials.VerifiablePresentation;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 
 public class SSIVerificationImpl implements SSIVerification{
   @Override
-  public VerifiablePresentation verifyPresentation(VerifiablePresentation vp) {
+  public VerifiablePresentationDto verifyPresentation(VerifiablePresentationDto vp) {
     return null;
   }
 
   @Override
-  public VerifiableCredential verifiyCredential(VerifiableCredential vc) {
+  public VerifiableCredentialDto verifiyCredential(VerifiableCredentialDto vc) {
     return null;
   }
 }

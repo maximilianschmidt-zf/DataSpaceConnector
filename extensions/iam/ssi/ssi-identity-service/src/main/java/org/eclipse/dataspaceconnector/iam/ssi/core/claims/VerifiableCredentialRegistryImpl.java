@@ -13,7 +13,7 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
-import com.danubetech.verifiablecredentials.VerifiableCredential;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,19 +25,19 @@ public final class VerifiableCredentialRegistryImpl implements VerifiableCredent
 
   public static VerifiableCredentialRegistry getInstance() { return instance; }
 
-  private final Map<String, VerifiableCredential> verifiableCredentialMap;
+  private final Map<String, VerifiableCredentialDto> verifiableCredentialMap;
 
   public VerifiableCredentialRegistryImpl() {
     verifiableCredentialMap = new ConcurrentHashMap<>();
   }
 
   @Override
-  public void addVerifableCredential(VerifiableCredential vc) {
+  public void addVerifableCredential(VerifiableCredentialDto vc) {
 
   }
 
   @Override
-  public VerifiableCredential getVerifiableCredential(String name) {
+  public VerifiableCredentialDto getVerifiableCredential(String name) {
     return null;
   }
 }
