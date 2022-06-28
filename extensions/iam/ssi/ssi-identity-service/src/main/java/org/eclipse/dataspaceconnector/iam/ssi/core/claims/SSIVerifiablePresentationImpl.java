@@ -13,5 +13,29 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
-public class SSIVerifiablePresentationImpl {
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
+import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
+
+public class SSIVerifiablePresentationImpl implements SSIVerifiablePresentation {
+
+  IdentityWalletApiService walletApiService;
+
+  public SSIVerifiablePresentationImpl(IdentityWalletApiService walletApiService) {
+    this.walletApiService = walletApiService;
+  }
+
+  @Override
+  public VerifiablePresentationDto getPresentation(VerifiableCredentialDto vc) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    String vcJsonString = mapper.writeValueAsString(vc);
+
+    String vpAsString = walletApiService.issueVerifiablePresentation(vcJsonString);
+
+    VerifiablePresentationDto vp = mapper.readValue(vpAsString, VerifiablePresentationDto.class);
+
+    return vp;
+  }
 }

@@ -15,10 +15,32 @@ package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
 
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistry;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistryImpl;
+import org.eclipse.dataspaceconnector.iam.ssi.wallet.ManagedIdentityWalletApiServiceImpl;
+import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
 
 public class SSIVerifiableCredentialsImpl implements SSIVerifiableCredentials{
+
+  private IdentityWalletApiService walletApiService;
+  private VerifiableCredentialRegistry verifiableCredentialRegistry;
+
+  public SSIVerifiableCredentialsImpl(IdentityWalletApiService walletApiService, VerifiableCredentialRegistry verifiableCredentialRegistry) {
+    this.walletApiService = walletApiService;
+    this.verifiableCredentialRegistry = verifiableCredentialRegistry;
+  }
+
   @Override
   public VerifiableCredentialDto findByScope(String scope) {
-    return null;
+    // Update VC Registry
+    walletApiService.fetchWalletDescription();
+
+    try{
+      VerifiableCredentialDto vc =  verifiableCredentialRegistry.getVerifiableCredential(scope);
+      return vc;
+    } catch (Exception e){
+      throw new EdcException(e.getMessage());
+    }
   }
 }

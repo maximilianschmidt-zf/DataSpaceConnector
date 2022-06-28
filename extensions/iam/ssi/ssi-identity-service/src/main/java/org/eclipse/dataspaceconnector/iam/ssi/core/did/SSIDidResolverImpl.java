@@ -13,5 +13,34 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.did;
 
-public class SSIDidResolverImpl {
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.dataspaceconnector.iam.ssi.core.SSIIdentityServiceExtension;
+import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
+
+public class SSIDidResolverImpl implements SSIDidResolver{
+
+  private final IdentityWalletApiService walletController;
+
+
+  public SSIDidResolverImpl(IdentityWalletApiService walletApiService) {
+    this.walletController = walletApiService;
+  }
+
+  @Override
+  public DidDocumentDto resolveDid(String did) throws EdcException {
+    String jsonDid = walletController.resolveDid(did);
+
+    if (jsonDid != null){
+      try{
+        return new ObjectMapper().readValue(jsonDid, DidDocumentDto.class);
+      } catch (JsonProcessingException e){
+        throw new EdcException("Invalid DidFormat");
+      }
+    } else {
+      throw new EdcException("Did not found");
+    }
+  }
+
 }

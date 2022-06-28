@@ -22,14 +22,17 @@ plugins {
 dependencies {
     api(project(":spi"))
     //api(project(":extensions:iam:ssi:ssi-managed-identity-wallet-configuration"))
-    api(project(":extensions:iam:ssi:ssi-managed-identity-wallet"))
+    api(project(":extensions:iam:ssi:ssi-identity-service"))
+
 
     implementation(project(":core"))
     implementation(project(":extensions:api:data-management"))
     implementation(project(":extensions:filesystem:configuration-fs"))
     implementation("decentralized-identity:jsonld-common-java:1.0.0")
     implementation("info.weboftrust:ld-signatures-java:1.0.0")
+    implementation("decentralized-identity:jsonld-common-java:1.0.0")
     implementation("com.github.multiformats:java-multibase:v1.1.0")
+
 }
 
 repositories {

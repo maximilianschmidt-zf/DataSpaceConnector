@@ -13,11 +13,12 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 
 public interface SSIVerifiablePresentation {
 
-  public VerifiablePresentationDto getPresentation(VerifiableCredentialDto vc);
+  public VerifiablePresentationDto getPresentation(VerifiableCredentialDto vc) throws JsonProcessingException;
 
 }

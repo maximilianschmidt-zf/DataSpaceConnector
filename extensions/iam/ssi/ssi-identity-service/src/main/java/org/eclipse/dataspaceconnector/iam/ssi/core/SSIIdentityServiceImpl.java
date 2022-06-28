@@ -1,0 +1,71 @@
+/*
+ * Copyright (c) 2022 ZF Friedrichshafen AG
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Contributors:
+ *      ZF Friedrichshafen AG - Initial API and Implementation
+ */
+
+package org.eclipse.dataspaceconnector.iam.ssi.core;
+
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.dataspaceconnector.iam.ssi.core.claims.*;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
+import org.eclipse.dataspaceconnector.spi.iam.ClaimToken;
+import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
+import org.eclipse.dataspaceconnector.spi.iam.TokenRepresentation;
+import org.eclipse.dataspaceconnector.spi.result.Result;
+import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
+
+public class SSIIdentityServiceImpl implements IdentityService {
+
+  private final SSIClaims claims;
+  private final SSIVerification verification;
+
+  public SSIIdentityServiceImpl(IdentityWalletApiService walletApiService, SSIVerifiableCredentials verifiableCredentials, SSIVerifiablePresentation verifiablePresentation) {
+    claims = new SSIClaims(verifiableCredentials, verifiablePresentation);
+    verification = new SSIVerificationImpl(walletApiService);
+  }
+
+  @Override
+  public Result<TokenRepresentation> obtainClientCredentials(String scope) {
+    scope = "MembershipCredential";
+    TokenRepresentation token;
+    try {
+      VerifiablePresentationDto vp = claims.getVerifiablePresentation(scope);
+      token = claims.makeTokenFromVerifiablePresentation(vp);
+      return Result.success(token);
+    } catch (Exception e) {
+      return Result.failure(e.getMessage());
+    }
+  }
+
+  @Override
+  public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation) {
+    ObjectMapper mapper = new ObjectMapper();
+
+    var token = tokenRepresentation.getToken();
+    try {
+      VerifiablePresentationDto tokenVP = mapper.readValue(token, VerifiablePresentationDto.class);
+      VerifiablePresentationDto verifiedVP = verification.verifyPresentation(tokenVP);
+      String stringVP = mapper.writeValueAsString(verifiedVP);
+      var claimTokenBuilder = ClaimToken.Builder.newInstance();
+      claimTokenBuilder.claim(verifiedVP.getType().get(0), stringVP);
+      return Result.success(claimTokenBuilder.build());
+    } catch (JsonProcessingException e) {
+      return Result.failure(e.getMessage());
+    }
+  }
+
+  @Override
+  public Result<ClaimToken> verifyJwtToken(String token) {
+    return IdentityService.super.verifyJwtToken(token);
+  }
+}

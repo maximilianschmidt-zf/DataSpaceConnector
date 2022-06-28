@@ -1,28 +1,33 @@
 /*
- *  Copyright (c) 2022 Daimler TSS GmbH
+ * Copyright (c) 2022 ZF Friedrichshafen AG
  *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: Apache-2.0
  *
- *  Contributors:
- *       ZF Friefrichshafen AG - Initial implementation
- *
+ * Contributors:
+ *      ZF Friedrichshafen AG - Initial API and Implementation
  */
 
-package org.eclipse.dataspaceconnector.iam.ssi.wallet;
+package org.eclipse.dataspaceconnector.iam.ssi;
 
 //import org.eclipse.dataspaceconnector.iam.ssi.config.ManagedIdentityWalletConfig;
 import okhttp3.OkHttpClient;
 import org.eclipse.dataspaceconnector.api.datamanagement.configuration.DataManagementApiConfiguration;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistry;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistryImpl;
+import org.eclipse.dataspaceconnector.iam.ssi.wallet.ManagedIdentityWalletApiServiceImpl;
+import org.eclipse.dataspaceconnector.iam.ssi.wallet.ManagedIdentityWalletConfig;
 import org.eclipse.dataspaceconnector.spi.WebService;
 import org.eclipse.dataspaceconnector.spi.system.Inject;
+import org.eclipse.dataspaceconnector.spi.system.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
 
-
+@Provides({IdentityWalletApiService.class, VerifiableCredentialRegistry.class})
 public class ManagedIdentityWalletExtension implements ServiceExtension {
 
     @Override
@@ -40,7 +45,6 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
     /**
      * Keycloak Settings
      */
-    private final String KEYCLOAK_URL = "ssi.miw.keycloak.url";
     private final String KEYCLOAK_USERNAME = "ssi.miw.keycloak.username";
     private final String KEYCLOAK_CLIENT_ID = "ssi.miw.keycloak.clientid";
     private final String KEYCLOAK_CLIENT_SECRET = "ssi.miw.keycloak.clientsecret";
@@ -74,14 +78,15 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
                 .walletJwksURL(context.getConfig().getString(WALLET_JWKS_URL))
                 .walletIssuerURL(context.getConfig().getString(WALLET_ISSUER_URL))
                 .accessTokenURL(context.getConfig().getString(ACCESSTOKEN_URL))
-                .keycloakURL(context.getConfig().getString(KEYCLOAK_URL))
                 .keycloakClientID(context.getConfig().getString(KEYCLOAK_CLIENT_ID))
                 .keycloakClientSecret(context.getConfig().getString(KEYCLOAK_CLIENT_SECRET))
                 .keycloakGrandType(context.getConfig().getString(KEYCLOAK_CLIENT_GRAND_TYPE))
                 .keycloakScope(context.getConfig().getString(KEYCLOAK_SCOPE))
                 .build();
 
-        webService.registerResource(config.getContextAlias(),
-                new ManagedIdentityWalletApiController(context.getMonitor(), logPrefix, walletConfig, okHttpClient, typeManager));
+        VerifiableCredentialRegistry credentialRegistry = new VerifiableCredentialRegistryImpl();
+        context.registerService(VerifiableCredentialRegistry.class, credentialRegistry);
+        context.registerService(IdentityWalletApiService.class,
+                new ManagedIdentityWalletApiServiceImpl(context.getMonitor(), logPrefix, walletConfig, okHttpClient, typeManager, credentialRegistry));
     }
 }

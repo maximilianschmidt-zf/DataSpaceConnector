@@ -21,5 +21,5 @@ public interface SSIVerification {
 
   public VerifiablePresentationDto verifyPresentation(VerifiablePresentationDto vp);
 
-  public VerifiableCredentialDto verifiyCredential(VerifiableCredentialDto vc);
+  public VerifiableCredentialDto verifyCredential(VerifiableCredentialDto vc);
 }

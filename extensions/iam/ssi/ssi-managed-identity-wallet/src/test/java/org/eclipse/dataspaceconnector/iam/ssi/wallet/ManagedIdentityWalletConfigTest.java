@@ -11,17 +11,15 @@
  *      ZF Friedrichshafen AG - Initial API and Implementation
  */
 
-package org.eclipse.dataspaceconnector.iam.ssi.core.did;
+package org.eclipse.dataspaceconnector.iam.ssi.wallet;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.Test;
 
-public interface SSIDidResolver {
+public class ManagedIdentityWalletConfigTest {
 
-  /**
-   * Resolve a DID or BPN via the MIW API endpoint
-   * @param did as String or BPN
-   * @return DidDocumentDto
-   */
-  DidDocumentDto resolveDid(String did) throws JsonProcessingException;
 
+  @Test
+  public void verifyWalletConfigBuilder(){
+
+  }
 }

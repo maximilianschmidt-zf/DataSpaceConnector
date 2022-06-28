@@ -13,7 +13,7 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.identity;
 
-import org.eclipse.dataspaceconnector.iam.ssi.core.identity.SSIIdentityServiceImpl;
+import org.eclipse.dataspaceconnector.iam.ssi.core.SSIIdentityServiceImpl;
 import org.junit.jupiter.api.Test;
 
 public class SSIIdentityServiceExtensionTest {

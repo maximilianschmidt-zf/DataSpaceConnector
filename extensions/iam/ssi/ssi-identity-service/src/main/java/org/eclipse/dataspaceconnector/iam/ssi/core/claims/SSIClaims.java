@@ -20,10 +20,15 @@ import org.eclipse.dataspaceconnector.spi.iam.TokenRepresentation;
 
 public class SSIClaims {
 
-  SSIVerifiableCredentialsImpl verifiableCredentials;
+  SSIVerifiableCredentials verifiableCredentials;
   SSIVerifiablePresentation verifiablePresentation;
 
-  public VerifiablePresentationDto GetVerifiedPresentation(String scope) throws Exception{
+  public SSIClaims(SSIVerifiableCredentials verifiableCredentials, SSIVerifiablePresentation verifiablePresentation) {
+    this.verifiableCredentials = verifiableCredentials;
+    this.verifiablePresentation = verifiablePresentation;
+  }
+
+  public VerifiablePresentationDto getVerifiablePresentation(String scope) throws Exception{
     //First try to get Credentials with Scope
     try{
       VerifiableCredentialDto vc = verifiableCredentials.findByScope(scope);
@@ -35,7 +40,7 @@ public class SSIClaims {
     }
   }
 
-  public TokenRepresentation MakeTokenFromVerifiablePresentation(VerifiablePresentationDto vp){
+  public TokenRepresentation makeTokenFromVerifiablePresentation(VerifiablePresentationDto vp){
     TokenRepresentation token = TokenRepresentation.Builder.newInstance().token(vp.toString()).build();
     //return MIW.IssueVP(VC)
     return token;

@@ -28,8 +28,6 @@ public class ManagedIdentityWalletConfig {
     @NotNull
     private String walletIssuerURL;
     @NotNull
-    private String keycloakURL;
-    @NotNull
     private String keycloakClientID;
     @NotNull
     private String keycloakClientSecret;
@@ -48,7 +46,6 @@ public class ManagedIdentityWalletConfig {
                 "walletURL='" + walletURL + '\'' +
                 ", walletJwksURL='" + walletJwksURL + '\'' +
                 ", walletIssuerURL='" + walletIssuerURL + '\'' +
-                ", keycloakURL='" + keycloakURL + '\'' +
                 ", keycloakClientID='" + keycloakClientID + '\'' +
                 ", keycloakClientSecret='" + keycloakClientSecret + '\'' +
                 ", keycloakGrandType='" + keycloakGrandType + '\'' +
@@ -83,10 +80,6 @@ public class ManagedIdentityWalletConfig {
 
     public String getWalletIssuerURL() {
         return walletIssuerURL;
-    }
-
-    public String getKeycloakURL() {
-        return keycloakURL;
     }
 
     public String getKeycloakClientID() {
@@ -127,11 +120,6 @@ public class ManagedIdentityWalletConfig {
 
         public Builder accessTokenURL(String accessTokenURL){
             walletConfig.accessTokenURL = accessTokenURL;
-            return this;
-        }
-
-        public Builder keycloakURL(String keycloakURL){
-            walletConfig.keycloakURL = keycloakURL;
             return this;
         }
 

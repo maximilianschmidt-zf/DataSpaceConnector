@@ -13,7 +13,7 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
-import org.eclipse.dataspaceconnector.iam.ssi.core.identity.SSIIdentityServiceImpl;
+import org.eclipse.dataspaceconnector.iam.ssi.core.SSIIdentityServiceImpl;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 import org.eclipse.dataspaceconnector.spi.iam.TokenRepresentation;
 import org.eclipse.dataspaceconnector.spi.result.Result;

@@ -24,20 +24,41 @@ val jupiterVersion: String by project
 val rsApi: String by project
 
 dependencies {
+
     implementation(project(":core"))
 
-    implementation(project(":extensions:api:observability"))
-
     implementation(project(":extensions:filesystem:configuration-fs"))
-    implementation(project(":extensions:iam:iam-mock"))
+
+    implementation(project(":extensions:iam:ssi:ssi-identity-service"))
 
     implementation(project(":extensions:api:auth-tokenbased"))
     implementation(project(":extensions:api:data-management"))
 
     implementation(project(":samples:06.0-ssi-authentication:transfer-file"))
 
-    implementation(project(":data-protocols:ids")) {
-        exclude("org.eclipse.dataspaceconnector","ids-token-validation")
+//    implementation(project(":core"))
+//
+//    implementation(project(":extensions:api:observability"))
+//
+//    implementation(project(":extensions:filesystem:configuration-fs"))
+//    implementation(project(":extensions:iam:iam-mock"))
+//
+//    implementation(project(":extensions:api:auth-tokenbased"))
+//    implementation(project(":extensions:api:data-management"))
+//
+//    implementation(project(":samples:06.0-ssi-authentication:transfer-file"))
+//
+//    implementation(project(":data-protocols:ids")) {
+//        exclude("org.eclipse.dataspaceconnector","ids-token-validation")
+//    }
+}
+
+repositories {
+    maven {
+        url = uri("https://repo.danubetech.com/repository/maven-public/")
+    }
+    maven {
+        url = uri("https://jitpack.io/")
     }
 }
 

@@ -15,6 +15,8 @@ package org.eclipse.dataspaceconnector.iam.ssi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class WalletDescriptionDto {
 //"name": "CatenaX-Wallet",
 //"bpn": "BPNL000000000000",
@@ -29,14 +31,18 @@ public class WalletDescriptionDto {
 
     private final String createdAt;
 
+    private final List<VerifiableCredentialDto> verifiableCredentials;
+
     public WalletDescriptionDto(@JsonProperty("name") String name,
                                 @JsonProperty("bpn") String bpn,
                                 @JsonProperty("did") String did,
-                                @JsonProperty("createdAt") String createdAt) {
+                                @JsonProperty("createdAt") String createdAt,
+                                @JsonProperty("vcs") List<VerifiableCredentialDto> verifiableCredentials) {
         this.name = name;
         this.bpn = bpn;
         this.did = did;
         this.createdAt = createdAt;
+        this.verifiableCredentials = verifiableCredentials;
     }
 
     public String getName() {
@@ -53,5 +59,9 @@ public class WalletDescriptionDto {
 
     public String getCreatedAt() {
         return createdAt;
+    }
+
+    public List<VerifiableCredentialDto> getVerifiableCredentials() {
+        return verifiableCredentials;
     }
 }

@@ -11,7 +11,7 @@
  *      ZF Friedrichshafen AG - Initial API and Implementation
  */
 
-package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
+package org.eclipse.dataspaceconnector.iam.ssi.model;
 
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 
@@ -19,5 +19,7 @@ public interface VerifiableCredentialRegistry {
 
   void addVerifableCredential(VerifiableCredentialDto vc);
 
-  VerifiableCredentialDto getVerifiableCredential(String name);
+  VerifiableCredentialDto getVerifiableCredential(String name) throws Exception;
+
+  void clearRegistry();
 }

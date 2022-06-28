@@ -11,13 +11,12 @@
  *      ZF Friedrichshafen AG - Initial API and Implementation
  */
 
-package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
+package org.eclipse.dataspaceconnector.iam.ssi.model;
 
-import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
-
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.lang.String.format;
 
 public final class VerifiableCredentialRegistryImpl implements VerifiableCredentialRegistry{
 
@@ -33,11 +32,19 @@ public final class VerifiableCredentialRegistryImpl implements VerifiableCredent
 
   @Override
   public void addVerifableCredential(VerifiableCredentialDto vc) {
+    verifiableCredentialMap.put(vc.getType().get(0).toString(), vc);
+  }
 
+  public void clearRegistry(){
+    this.verifiableCredentialMap.clear();
   }
 
   @Override
-  public VerifiableCredentialDto getVerifiableCredential(String name) {
-    return null;
+  public VerifiableCredentialDto getVerifiableCredential(String name) throws Exception {
+    if(verifiableCredentialMap.containsKey(name)){
+      return verifiableCredentialMap.get(name);
+    } else {
+      throw new Exception(format("Credential with type %s not found", name));
+    }
   }
 }

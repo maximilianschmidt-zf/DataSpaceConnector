@@ -24,18 +24,41 @@ val jupiterVersion: String by project
 val rsApi: String by project
 
 dependencies {
+    //api(project(":data-protocols:ids:ids-core"))
     implementation(project(":core"))
 
-    implementation(project(":extensions:api:observability"))
-
     implementation(project(":extensions:filesystem:configuration-fs"))
-    implementation(project(":extensions:iam:iam-mock"))
+
+    implementation(project(":extensions:iam:ssi:ssi-identity-service"))
 
     implementation(project(":extensions:api:auth-tokenbased"))
     implementation(project(":extensions:api:data-management"))
 
-    implementation(project(":data-protocols:ids")) {
+    implementation(project(":data-protocols:ids")){
         exclude("org.eclipse.dataspaceconnector","ids-token-validation")
+    }
+//    implementation(project(":data-protocols:ids:ids-api-configuration"))
+//    implementation(project(":data-protocols:ids:ids-api-multipart-dispatcher-v1"))
+//    implementation(project(":data-protocols:ids:ids-api-multipart-endpoint-v1"))
+//    //api(project(":data-protocols:ids:ids-api-transform-v1"))
+//    implementation(project(":data-protocols:ids:ids-transform-v1"))
+//    implementation(project(":data-protocols:ids:ids-core"))
+//    implementation(project(":data-protocols:ids:ids-spi"))
+
+
+    //implementation(project(":spi:iam"))
+
+//    implementation(project(":data-protocols:ids")) {
+//        exclude("org.eclipse.dataspaceconnector","ids-token-validation")
+//    }
+}
+
+repositories {
+    maven {
+        url = uri("https://repo.danubetech.com/repository/maven-public/")
+    }
+    maven {
+        url = uri("https://jitpack.io/")
     }
 }
 
