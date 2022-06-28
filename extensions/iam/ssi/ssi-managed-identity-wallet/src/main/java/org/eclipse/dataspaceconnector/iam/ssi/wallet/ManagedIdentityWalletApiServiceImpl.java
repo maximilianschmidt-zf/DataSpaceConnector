@@ -72,7 +72,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
 
   public String issueVerifiablePresentation(String verifiableCredentialJson) {
     monitor.info(format("%s :: Received a presentation request for presentation " + verifiableCredentialJson, logPrefix));
-    var url = config.getWalletURL() + "/api/presentation";
+    var url = config.getWalletURL() + "/api/presentations";
     try {
       AccessTokenDescriptionDto accessToken = getKeyCloakToken(this.accessTokenRequestDto);
       RequestBody reqBody = RequestBody.create(
@@ -88,7 +88,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
         throw new InternalServerErrorException(format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
       }
       monitor.info("Fetched VP");
-      return body.toString();
+      return body.string();
     } catch (Exception ex) {
       throw new EdcException(ex.getMessage());
     }
@@ -147,6 +147,12 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     }
     fillRegistry(walletDescriptionDto.getVerifiableCredentials());
   }
+
+  @Override
+  public String getOwnerBPN() {
+    return config.getOwnerBPN();
+  }
+
 
   private void fillRegistry(List<VerifiableCredentialDto> credentialDtoList) {
     credentialRegistry.clearRegistry();

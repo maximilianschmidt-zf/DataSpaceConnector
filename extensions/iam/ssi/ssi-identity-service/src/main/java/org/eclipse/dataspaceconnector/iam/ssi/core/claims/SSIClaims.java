@@ -13,6 +13,8 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.dataspaceconnector.iam.ssi.core.utils.VerifiableCredentialException;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
@@ -40,9 +42,10 @@ public class SSIClaims {
     }
   }
 
-  public TokenRepresentation makeTokenFromVerifiablePresentation(VerifiablePresentationDto vp){
-    TokenRepresentation token = TokenRepresentation.Builder.newInstance().token(vp.toString()).build();
-    //return MIW.IssueVP(VC)
+  public TokenRepresentation makeTokenFromVerifiablePresentation(VerifiablePresentationDto vp) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    String tokenVP = mapper.writeValueAsString(vp);
+    TokenRepresentation token = TokenRepresentation.Builder.newInstance().token(tokenVP).build();
     return token;
   }
 }

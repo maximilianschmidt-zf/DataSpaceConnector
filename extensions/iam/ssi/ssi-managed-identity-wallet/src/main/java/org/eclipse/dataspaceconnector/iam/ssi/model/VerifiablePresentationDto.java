@@ -19,6 +19,7 @@ import java.util.List;
 
 public class VerifiablePresentationDto {
 
+  @JsonProperty("@context")
   private final List<String> context;
 
   private final String id;

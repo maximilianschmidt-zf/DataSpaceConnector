@@ -23,6 +23,7 @@ public class VerifiableCredentialDto {
 
   private final String id;
 
+  @JsonProperty("@context")
   private final List<String> context;
 
   private final List<String> type;

@@ -20,4 +20,6 @@ public interface IdentityWalletApiService {
   public String resolveDid(String did);
 
   public void fetchWalletDescription();
+
+  public String getOwnerBPN();
 }

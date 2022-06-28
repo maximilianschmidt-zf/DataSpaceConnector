@@ -17,7 +17,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
+import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationRequestDto;
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SSIVerifiablePresentationImpl implements SSIVerifiablePresentation {
 
@@ -30,10 +35,16 @@ public class SSIVerifiablePresentationImpl implements SSIVerifiablePresentation 
   @Override
   public VerifiablePresentationDto getPresentation(VerifiableCredentialDto vc) throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
-    String vcJsonString = mapper.writeValueAsString(vc);
+    List<VerifiableCredentialDto> credentialDtoList = new ArrayList<>();
+    credentialDtoList.add(vc);
 
-    String vpAsString = walletApiService.issueVerifiablePresentation(vcJsonString);
+    VerifiablePresentationRequestDto vpRequest = new VerifiablePresentationRequestDto(
+            walletApiService.getOwnerBPN(),
+            credentialDtoList
+    );
 
+    String vpRequestJsonString = mapper.writeValueAsString(vpRequest);
+    String vpAsString = walletApiService.issueVerifiablePresentation(vpRequestJsonString);
     VerifiablePresentationDto vp = mapper.readValue(vpAsString, VerifiablePresentationDto.class);
 
     return vp;

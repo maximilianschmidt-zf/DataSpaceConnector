@@ -63,6 +63,8 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
     private final String WALLET_DID = "ssi.miw.did";
     private final String WALLET_JWKS_URL = "ssi.miw.url";
     private final String WALLET_ISSUER_URL = "ssi.miw.url";
+
+    private final String OWNER_BPN = "ssi.miw.bpn";
     @Inject
     DataManagementApiConfiguration config;
 
@@ -82,6 +84,7 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
                 .keycloakClientSecret(context.getConfig().getString(KEYCLOAK_CLIENT_SECRET))
                 .keycloakGrandType(context.getConfig().getString(KEYCLOAK_CLIENT_GRAND_TYPE))
                 .keycloakScope(context.getConfig().getString(KEYCLOAK_SCOPE))
+                .ownerBPN(context.getConfig().getString(OWNER_BPN))
                 .build();
 
         VerifiableCredentialRegistry credentialRegistry = new VerifiableCredentialRegistryImpl();

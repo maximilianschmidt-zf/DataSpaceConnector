@@ -38,12 +38,16 @@ public class ManagedIdentityWalletConfig {
     @NotNull
     private String accessTokenURL;
     @NotNull
+    private String ownerBPN;
+
+    @NotNull
     private String logprefig;
 
     @Override
     public String toString() {
         return "ManagedIdentityWalletConfig{" +
                 "walletURL='" + walletURL + '\'' +
+                ", walletDID='" + walletDID + '\'' +
                 ", walletJwksURL='" + walletJwksURL + '\'' +
                 ", walletIssuerURL='" + walletIssuerURL + '\'' +
                 ", keycloakClientID='" + keycloakClientID + '\'' +
@@ -51,6 +55,7 @@ public class ManagedIdentityWalletConfig {
                 ", keycloakGrandType='" + keycloakGrandType + '\'' +
                 ", keycloakScope='" + keycloakScope + '\'' +
                 ", accessTokenURL='" + accessTokenURL + '\'' +
+                ", ownerBPN='" + ownerBPN + '\'' +
                 ", logprefig='" + logprefig + '\'' +
                 '}';
     }
@@ -106,6 +111,10 @@ public class ManagedIdentityWalletConfig {
         return logprefig;
     }
 
+    public String getOwnerBPN() {
+        return ownerBPN;
+    }
+
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder{
         private final ManagedIdentityWalletConfig walletConfig;
@@ -155,6 +164,11 @@ public class ManagedIdentityWalletConfig {
 
         public Builder keycloakGrandType(String keycloakGrandType){
             walletConfig.keycloakGrandType = keycloakGrandType;
+            return this;
+        }
+
+        public Builder ownerBPN(String ownerBPN){
+            walletConfig.ownerBPN = ownerBPN;
             return this;
         }
 
