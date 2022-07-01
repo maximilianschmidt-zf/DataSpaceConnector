@@ -19,7 +19,7 @@ import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 
 public interface SSIVerification {
 
-  public VerifiablePresentationDto verifyPresentation(VerifiablePresentationDto vp);
+  public boolean verifyPresentation(VerifiablePresentationDto vp);
 
   public VerifiableCredentialDto verifyCredential(VerifiableCredentialDto vc);
 }

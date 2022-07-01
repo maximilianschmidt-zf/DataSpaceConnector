@@ -96,7 +96,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
 
   public String resolveDid(String did) {
     monitor.info(format("%s :: Received a did request for did " + did, logPrefix));
-    var url = config.getWalletURL() + "api/didDocuments/" + did;
+    var url = config.getWalletURL() + "/api/didDocuments/" + did;
     AccessTokenDescriptionDto accessToken = null;
 
     try {
@@ -112,7 +112,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
         throw new InternalServerErrorException(format("Keycloak responded with: %s %s", response.code(), body != null ? body.string() : ""));
       }
       monitor.info("Fetched Did");
-      return body.toString();
+      return body.string();
     } catch (Exception e) {
       monitor.severe(format("Error by fetching Did at %s", url), e);
       throw new EdcException(e.getMessage());

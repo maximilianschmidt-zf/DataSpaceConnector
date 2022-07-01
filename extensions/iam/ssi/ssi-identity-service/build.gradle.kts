@@ -6,6 +6,16 @@ plugins {
 val nimbusVersion: String by project
 val rsApi: String by project
 
+tasks{
+//    addNativeLibs(type: Copy) {
+//        from 'natives'
+//        into "build/jfx/native/$jfx.appName"
+//    }
+//    build {
+//        dependsOn(plugin)
+//    }
+}
+
 dependencies {
     api(project(":core"))
     api(project(":extensions:http"))
@@ -18,9 +28,16 @@ dependencies {
     implementation(project(":extensions:api:data-management:api-configuration"))
     implementation(project(":extensions:filesystem:configuration-fs"))
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:${rsApi}")
+    implementation("com.danubetech:verifiable-credentials-java:1.0.0")
+
+//    implementation("com.danubetech:key-formats-java:1.2.0")
+//    implementation("org.abstractj.kalium:kalium:0.8.0")
+//    implementation("com.github.jnr:jnr-ffi:2.0.5")
+
     implementation("decentralized-identity:jsonld-common-java:1.0.0")
     implementation("info.weboftrust:ld-signatures-java:1.0.0")
     implementation("com.github.multiformats:java-multibase:v1.1.0")
+
 }
 
 repositories {

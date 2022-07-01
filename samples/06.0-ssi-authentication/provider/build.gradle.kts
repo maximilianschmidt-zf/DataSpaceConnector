@@ -48,9 +48,9 @@ dependencies {
 //
 //    implementation(project(":samples:06.0-ssi-authentication:transfer-file"))
 //
-//    implementation(project(":data-protocols:ids")) {
-//        exclude("org.eclipse.dataspaceconnector","ids-token-validation")
-//    }
+    implementation(project(":data-protocols:ids")) {
+       exclude("org.eclipse.dataspaceconnector","ids-token-validation")
+    }
 }
 
 repositories {

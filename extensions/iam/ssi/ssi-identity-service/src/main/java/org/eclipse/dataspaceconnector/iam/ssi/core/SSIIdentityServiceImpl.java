@@ -54,11 +54,15 @@ public class SSIIdentityServiceImpl implements IdentityService {
     var token = tokenRepresentation.getToken();
     try {
       VerifiablePresentationDto tokenVP = mapper.readValue(token, VerifiablePresentationDto.class);
-      VerifiablePresentationDto verifiedVP = verification.verifyPresentation(tokenVP);
-      String stringVP = mapper.writeValueAsString(verifiedVP);
-      var claimTokenBuilder = ClaimToken.Builder.newInstance();
-      claimTokenBuilder.claim(verifiedVP.getType().get(0), stringVP);
-      return Result.success(claimTokenBuilder.build());
+      if(verification.verifyPresentation(tokenVP)){
+        Result<TokenRepresentation> responseToken = obtainClientCredentials("");
+        var claimTokenBuilder = ClaimToken.Builder.newInstance();
+        claimTokenBuilder.claim("", responseToken.getContent().getToken());
+        return Result.success(claimTokenBuilder.build());
+      } else{
+        return Result.failure("Invalid Token");
+      }
+
     } catch (JsonProcessingException e) {
       return Result.failure(e.getMessage());
     }
