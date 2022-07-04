@@ -22,12 +22,10 @@ public class SSIIdentityServiceExtensionTest {
   private static final String VC_SCOPE = "Membership";
   private SSIIdentityServiceImpl identityService;
 
-  //TestServiceImplObtainClientCredentials Failed
   @Test
   void testNoConfigObtainClientCredentials(){
     identityService.obtainClientCredentials(VC_SCOPE);
   }
-  //TestServiceImplObtainClientCredentials Success Happy
 
 
 }

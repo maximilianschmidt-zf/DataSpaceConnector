@@ -13,7 +13,6 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi;
 
-//import org.eclipse.dataspaceconnector.iam.ssi.config.ManagedIdentityWalletConfig;
 import okhttp3.OkHttpClient;
 import org.eclipse.dataspaceconnector.api.datamanagement.configuration.DataManagementApiConfiguration;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistry;
@@ -45,7 +44,6 @@ public class ManagedIdentityWalletExtension implements ServiceExtension {
     /**
      * Keycloak Settings
      */
-    private final String KEYCLOAK_USERNAME = "ssi.miw.keycloak.username";
     private final String KEYCLOAK_CLIENT_ID = "ssi.miw.keycloak.clientid";
     private final String KEYCLOAK_CLIENT_SECRET = "ssi.miw.keycloak.clientsecret";
     private final String KEYCLOAK_CLIENT_GRAND_TYPE = "ssi.miw.keycloak.grandtype";

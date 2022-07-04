@@ -15,7 +15,6 @@ package org.eclipse.dataspaceconnector.iam.ssi.wallet;
 
 import okhttp3.*;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistry;
-import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistryImpl;
 import org.eclipse.dataspaceconnector.iam.ssi.model.AccessTokenDescriptionDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.AccessTokenRequestDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
@@ -67,11 +66,11 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
             .grandType(config.getKeycloakGrandType())
             .scope(config.getKeycloakScope())
             .build();
-    monitor.info(format("%s :: Received a Initialize request with values: " + config.toString(), logPrefix));
+    monitor.info(format("%s :: Initialized Wallet with values: " + config.toString(), logPrefix));
   }
 
   public String issueVerifiablePresentation(String verifiableCredentialJson) {
-    monitor.info(format("%s :: Received a presentation request for presentation " + verifiableCredentialJson, logPrefix));
+    monitor.info(format("%s :: Received a presentation request for presentation", logPrefix));
     var url = config.getWalletURL() + "/api/presentations";
     try {
       AccessTokenDescriptionDto accessToken = getKeyCloakToken(this.accessTokenRequestDto);

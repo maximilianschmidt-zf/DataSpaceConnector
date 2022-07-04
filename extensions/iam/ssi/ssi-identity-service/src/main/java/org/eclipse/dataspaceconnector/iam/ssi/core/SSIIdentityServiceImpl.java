@@ -34,6 +34,11 @@ public class SSIIdentityServiceImpl implements IdentityService {
     verification = new SSIVerificationImpl(walletApiService);
   }
 
+  /**
+   *
+   * @param scope the given type of the needed credential
+   * @return Tokenrepresentation with the Verifiable Presentation as json string claim
+   */
   @Override
   public Result<TokenRepresentation> obtainClientCredentials(String scope) {
     scope = "MembershipCredential";
@@ -47,6 +52,11 @@ public class SSIIdentityServiceImpl implements IdentityService {
     }
   }
 
+  /**
+   * Verifies the token representation of the json verifiable presentation
+   * @param tokenRepresentation A token representation including the token to verify.
+   * @return Result<ClaimToken> with the json VerifiablePresentation of the EDC
+   */
   @Override
   public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation) {
     ObjectMapper mapper = new ObjectMapper();

@@ -16,6 +16,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Config Class for the endpoints and user management of the Managed Identity Wallet
+ */
 @JsonDeserialize(builder = ManagedIdentityWalletConfig.Builder.class)
 public class ManagedIdentityWalletConfig {
 
@@ -60,18 +63,7 @@ public class ManagedIdentityWalletConfig {
                 '}';
     }
 
-    private ManagedIdentityWalletConfig(){
-        /*this.walletURL = builder.walletURL;
-        this.keycloakURL = builder.keycloakURL;
-        this.keycloakClientID = builder.keycloakClientID;
-        this.keycloakClientSecret = builder.keycloakClientSecret;
-        this.keycloakGrandType = builder.keycloakGrandType;
-        this.keycloakScope = builder.keycloakScope;
-        this.accessTokenURL = builder.accessTokenURL;
-        this.logprefig = builder.logprefig;
-        this.walletJwksURL = builder.walletJwksURL;
-        this.walletIssuerURL = builder.walletIssuerURL;*/
-    }
+    private ManagedIdentityWalletConfig(){}
 
     public String getWalletURL() {
         return walletURL;

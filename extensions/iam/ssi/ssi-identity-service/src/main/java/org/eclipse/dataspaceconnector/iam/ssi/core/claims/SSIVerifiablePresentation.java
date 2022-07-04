@@ -17,6 +17,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 
+/**
+ * Interface for generating a Verifiable Presentation from a Credential
+ */
 public interface SSIVerifiablePresentation {
 
   public VerifiablePresentationDto getPresentation(VerifiableCredentialDto vc) throws JsonProcessingException;

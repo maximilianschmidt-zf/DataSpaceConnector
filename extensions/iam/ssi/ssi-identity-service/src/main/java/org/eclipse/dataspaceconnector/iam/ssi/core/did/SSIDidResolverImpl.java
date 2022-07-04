@@ -19,6 +19,9 @@ import org.eclipse.dataspaceconnector.iam.ssi.core.SSIIdentityServiceExtension;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
 
+/**
+ * Resolves the DID with the Wallet Interface
+ */
 public class SSIDidResolverImpl implements SSIDidResolver{
 
   private final IdentityWalletApiService walletController;
@@ -28,6 +31,13 @@ public class SSIDidResolverImpl implements SSIDidResolver{
     this.walletController = walletApiService;
   }
 
+  /**
+   * Requests the DIDDocoument as Json string and converts it if present
+   * otherwise throws an EDC exception
+   * @param did as String or BPN
+   * @return DIDDocument of a given DID as a String
+   * @throws EdcException
+   */
   @Override
   public DidDocumentDto resolveDid(String did) throws EdcException {
     String jsonDid = walletController.resolveDid(did);

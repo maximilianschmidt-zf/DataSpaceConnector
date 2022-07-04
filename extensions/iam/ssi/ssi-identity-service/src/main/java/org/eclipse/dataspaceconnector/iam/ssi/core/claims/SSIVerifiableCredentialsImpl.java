@@ -31,6 +31,12 @@ public class SSIVerifiableCredentialsImpl implements SSIVerifiableCredentials{
     this.verifiableCredentialRegistry = verifiableCredentialRegistry;
   }
 
+  /**
+   * Fetches the Identity Wallet API and search in the generated Verifiable Credential registry
+   * after a given credential type by scope
+   * @param scope of the credential type
+   * @return VerifiableCredentialDto or throws an EDCException if nothing found
+   */
   @Override
   public VerifiableCredentialDto findByScope(String scope) {
     // Update VC Registry

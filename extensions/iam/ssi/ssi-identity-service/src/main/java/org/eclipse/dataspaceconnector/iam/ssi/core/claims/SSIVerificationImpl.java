@@ -31,6 +31,9 @@ import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+/**
+ * Verification of the signature validation from a given Verifiable Presentation
+ */
 public class SSIVerificationImpl implements SSIVerification {
 
   private final SSIDidResolver didResolver;
@@ -40,6 +43,12 @@ public class SSIVerificationImpl implements SSIVerification {
   }
 
 
+  /**
+   * Verification of a given Presentation by consuming the validation
+   * Service Endpoint of the Wallet Identity Service
+   * @param vp
+   * @return
+   */
   @Override
   public boolean verifyPresentation(VerifiablePresentationDto vp) {
     boolean result = false;
@@ -56,11 +65,11 @@ public class SSIVerificationImpl implements SSIVerification {
 
   private boolean verifyEd25519Signature(byte[] publicKey, VerifiablePresentationDto vp) throws JsonLDException, GeneralSecurityException, IOException {
     //TODO Wait for validation Service and consume endpoint
-//    ObjectMapper mapper = new ObjectMapper();
-//    String jsonVP = mapper.writeValueAsString(vp);
-//    VerifiablePresentation danubPresentation = VerifiablePresentation.fromJson(jsonVP);
-//    Ed25519Signature2018LdVerifier verifier = new Ed25519Signature2018LdVerifier(publicKey);
-//    Boolean verified = verifier.verify(danubPresentation);
+/*    ObjectMapper mapper = new ObjectMapper();
+    String jsonVP = mapper.writeValueAsString(vp);
+    VerifiablePresentation danubPresentation = VerifiablePresentation.fromJson(jsonVP);
+    Ed25519Signature2018LdVerifier verifier = new Ed25519Signature2018LdVerifier(publicKey);
+    Boolean verified = verifier.verify(danubPresentation);*/
     return true;
   }
 

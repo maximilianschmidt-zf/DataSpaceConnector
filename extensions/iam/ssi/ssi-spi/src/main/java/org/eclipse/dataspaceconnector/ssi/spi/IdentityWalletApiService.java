@@ -13,6 +13,14 @@
 
 package org.eclipse.dataspaceconnector.ssi.spi;
 
+/**
+ * Standard interface for the Wallet API Endpoint, with the needed services
+ * from the used Wallet
+ * - Verifiable Presentations
+ * - Resolve DIDs
+ * - Fetches Wallet descriptions into a registry
+ * - Finding the EDCs Owner BPNL through the config
+ */
 public interface IdentityWalletApiService {
 
   public String issueVerifiablePresentation(String verifiableCredentialJson);

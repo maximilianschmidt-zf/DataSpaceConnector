@@ -32,6 +32,13 @@ public class SSIVerifiablePresentationImpl implements SSIVerifiablePresentation 
     this.walletApiService = walletApiService;
   }
 
+  /**
+   * Generates a Verifiable Presentation by requesting it from the IdentityWalletAPI Service with
+   * a given VerifiableCredentialDto
+   * @param vc
+   * @return VerifiablePresentationDto
+   * @throws JsonProcessingException
+   */
   @Override
   public VerifiablePresentationDto getPresentation(VerifiableCredentialDto vc) throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();

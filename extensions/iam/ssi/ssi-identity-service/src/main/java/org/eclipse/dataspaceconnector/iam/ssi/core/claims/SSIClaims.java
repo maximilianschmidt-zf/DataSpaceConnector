@@ -20,6 +20,10 @@ import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 import org.eclipse.dataspaceconnector.spi.iam.TokenRepresentation;
 
+/**
+ * SSI Claims finds the needed Verifiable Credential with a given Scope and transforms them into
+ * Verifiable Presentations and builds a Tokenpresentation out of them
+ */
 public class SSIClaims {
 
   SSIVerifiableCredentials verifiableCredentials;
@@ -31,7 +35,7 @@ public class SSIClaims {
   }
 
   public VerifiablePresentationDto getVerifiablePresentation(String scope) throws Exception{
-    //First try to get Credentials with Scope
+    //Try to get Credentials with Scope
     try{
       VerifiableCredentialDto vc = verifiableCredentials.findByScope(scope);
       VerifiablePresentationDto vp = verifiablePresentation.getPresentation(vc);
