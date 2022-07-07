@@ -77,12 +77,14 @@ Consumer_EDC_Contract_Offer_Request -> Multipart_Controller_Provider : Request C
 Multipart_Controller_Provider -> Identity_Service : verifyJwtToken(Tokenpresentation)
 Identity_Service -> SSI_Verification : verifyPresentation(VP)
 SSI_Verification -> SSI_Wallet_API_Service:  "/api/validation/validate" + VP
+SSI_Wallet_API_Service -> Managed_Identity_Wallet : "/api/validation/validate"
+Managed_Identity_Wallet --> SSI_Wallet_API_Service : return {WalletDescription, List<VCs>}
 SSI_Wallet_API_Service --> SSI_Verification: True/False
 SSI_Verification -> Identity_Service : Find credentials with scope
 Identity_Service -> SSI_Claims : getVerifiablePresentation(scope)
 SSI_Claims -> SSI_VerifiableCredentials : findByScope(scope)
 SSI_VerifiableCredentials -> SSI_Wallet_API_Service: fetchWalletDescription()
-SSI_Wallet_API_Service -> Managed_Identity_Wallet : "/api/wallets/did:indy:idunion:test:test#key-1"
+SSI_Wallet_API_Service -> Managed_Identity_Wallet : "/api/wallets/did:indy:idunion:test:test#key-1?withCredentials=true"
 Managed_Identity_Wallet --> SSI_Wallet_API_Service : return {WalletDescription, List<VCs>}
 SSI_Wallet_API_Service -> SSI_VerifiableCredentials_Registry : Save VC in Map<VC-TypeString, VC>
 SSI_VerifiableCredentials -> SSI_VerifiableCredentials_Registry : Find VC by Scope
