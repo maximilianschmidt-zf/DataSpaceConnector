@@ -13,14 +13,9 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
-import com.danubetech.keyformats.crypto.provider.impl.NaClSodiumEd25519Provider;
-import com.danubetech.verifiablecredentials.VerifiablePresentation;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import foundation.identity.jsonld.JsonLDException;
-import info.weboftrust.ldsignatures.verifier.Ed25519Signature2018LdVerifier;
-import io.ipfs.multibase.Base58;
-import org.eclipse.dataspaceconnector.iam.ssi.core.did.DidDocumentDto;
-import org.eclipse.dataspaceconnector.iam.ssi.core.did.DidVerificationMethodDto;
 import org.eclipse.dataspaceconnector.iam.ssi.core.did.SSIDidResolver;
 import org.eclipse.dataspaceconnector.iam.ssi.core.did.SSIDidResolverImpl;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
@@ -37,9 +32,11 @@ import java.security.GeneralSecurityException;
 public class SSIVerificationImpl implements SSIVerification {
 
   private final SSIDidResolver didResolver;
+  private final IdentityWalletApiService walletApiService;
 
   public SSIVerificationImpl(IdentityWalletApiService walletApiService) {
     didResolver = new SSIDidResolverImpl(walletApiService);
+    this.walletApiService = walletApiService;
   }
 
 
@@ -53,24 +50,17 @@ public class SSIVerificationImpl implements SSIVerification {
   public boolean verifyPresentation(VerifiablePresentationDto vp) {
     boolean result = false;
     try {
-      DidDocumentDto did = didResolver.resolveDid(vp.getHolder());
-      DidVerificationMethodDto didVerifyMethod = did.getVerificationMethodDtos().get(0);
-      byte[] publicKey = Base58.decode(didVerifyMethod.getPublicKeyBase58());
-      result = verifyEd25519Signature(publicKey, vp);
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+      String jsonVP = mapper.writeValueAsString(vp);
+      String validationResult = walletApiService.validateVerifablePresentation(jsonVP);
+      if(!validationResult.equals(null)){
+        result = true;
+      }
     } catch (Exception e) {
       throw new EdcException(e.getMessage());
     }
     return result;
-  }
-
-  private boolean verifyEd25519Signature(byte[] publicKey, VerifiablePresentationDto vp) throws JsonLDException, GeneralSecurityException, IOException {
-    //TODO Wait for validation Service and consume endpoint
-/*    ObjectMapper mapper = new ObjectMapper();
-    String jsonVP = mapper.writeValueAsString(vp);
-    VerifiablePresentation danubPresentation = VerifiablePresentation.fromJson(jsonVP);
-    Ed25519Signature2018LdVerifier verifier = new Ed25519Signature2018LdVerifier(publicKey);
-    Boolean verified = verifier.verify(danubPresentation);*/
-    return true;
   }
 
   @Override

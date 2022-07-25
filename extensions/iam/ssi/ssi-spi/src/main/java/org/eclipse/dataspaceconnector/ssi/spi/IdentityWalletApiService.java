@@ -29,5 +29,7 @@ public interface IdentityWalletApiService {
 
   public void fetchWalletDescription();
 
+  public String validateVerifablePresentation(String verifiablePresentationJson);
+
   public String getOwnerBPN();
 }

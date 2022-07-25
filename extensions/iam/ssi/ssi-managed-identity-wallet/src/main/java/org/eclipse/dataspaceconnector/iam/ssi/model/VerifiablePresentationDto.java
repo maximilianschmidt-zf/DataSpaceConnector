@@ -28,6 +28,7 @@ public class VerifiablePresentationDto {
 
   private final String holder;
 
+  @JsonProperty("verifiableCredential")
   private final List<VerifiableCredentialDto> verifiableCredentials;
 
   private final LdProofDto proof;

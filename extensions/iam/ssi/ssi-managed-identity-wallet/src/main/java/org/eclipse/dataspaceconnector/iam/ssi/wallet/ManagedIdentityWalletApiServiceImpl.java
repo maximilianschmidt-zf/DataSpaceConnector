@@ -39,13 +39,11 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
   private final ManagedIdentityWalletConfig config;
   private final OkHttpClient httpClient;
 
-  private final TypeManager typeManager;
-
   private final ObjectMapper objectMapper;
 
   private final AccessTokenRequestDto accessTokenRequestDto;
 
-  private VerifiableCredentialRegistry credentialRegistry;
+  private final VerifiableCredentialRegistry credentialRegistry;
 
   public ManagedIdentityWalletApiServiceImpl(Monitor monitor,
                                              String logPrefix,
@@ -57,7 +55,6 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     this.logPrefix = logPrefix;
     this.config = config;
     this.httpClient = httpClient;
-    this.typeManager = typeManager;
     this.objectMapper = typeManager.getMapper();
     this.credentialRegistry = credentialRegistry;
     AccessTokenRequestDto.Builder builder = AccessTokenRequestDto.Builder.newInstance();
@@ -66,7 +63,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
             .grandType(config.getKeycloakGrandType())
             .scope(config.getKeycloakScope())
             .build();
-    monitor.info(format("%s :: Initialized Wallet with values: " + config.toString(), logPrefix));
+    monitor.info(format("%s :: Initialized Wallet with values: " + config, logPrefix));
   }
 
   public String issueVerifiablePresentation(String verifiableCredentialJson) {
@@ -100,7 +97,7 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
 
     try {
       accessToken = getKeyCloakToken(this.accessTokenRequestDto);
-      monitor.severe(format("Fetched AccessToken %s", accessToken.toString()));
+      monitor.severe(format("Fetched AccessToken %s", accessToken));
       Request request = new Request.Builder()
               .url(url)
               .header("Authorization", "Bearer " + accessToken.getAccessToken())
@@ -118,33 +115,52 @@ public class ManagedIdentityWalletApiServiceImpl implements IdentityWalletApiSer
     }
   }
 
+  public String validateVerifablePresentation(String verifiablePresentationJson) {
+    monitor.info(format("%s :: Received a VP validation reques", logPrefix));
+    var url = config.getWalletURL() + "/api/presentations/validation?withDateValidation=false";
+    try {
+      AccessTokenDescriptionDto accessToken = getKeyCloakToken(this.accessTokenRequestDto);
+      RequestBody reqBody = RequestBody.create(
+              MediaType.parse("application/json"), verifiablePresentationJson);
+      Request request = new Request.Builder()
+              .url(url)
+              .header("Authorization", "Bearer " + accessToken.getAccessToken())
+              .post(reqBody)
+              .build();
+      var response = httpClient.newCall(request).execute();
+      var body = response.body();
+      if (!response.isSuccessful() || body == null) {
+        monitor.info("VP invalid");
+        throw new InternalServerErrorException(format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
+      }
+      monitor.info("VP valid");
+      return body.string();
+    } catch (Exception ex) {
+      throw new EdcException(ex.getMessage());
+    }
+  }
+
 
   public void fetchWalletDescription() {
-    monitor.info(format("%s :: Received a wallet request", logPrefix));
-    var url = config.getWalletURL() + "/api/wallets/" + config.getWalletDID() + "?withCredentials=true";
-    AccessTokenDescriptionDto accessToken = null;
-    WalletDescriptionDto walletDescriptionDto = null;
+    monitor.info(format("%s :: Start fetching Wallet Data", logPrefix));
     try {
-      accessToken = getKeyCloakToken(this.accessTokenRequestDto);
-      monitor.severe(format("Fetched AccessToken %s", accessToken.toString()));
+      var url = config.getWalletURL() + "/api/wallets/" + config.getWalletDID() + "?withCredentials=true";
+      AccessTokenDescriptionDto accessToken = getKeyCloakToken(this.accessTokenRequestDto);
       Request request = new Request.Builder()
               .url(url)
               .header("Authorization", "Bearer " + accessToken.getAccessToken())
               .build();
-      try (var response = httpClient.newCall(request).execute()) {
-        var body = response.body();
-        if (!response.isSuccessful() || body == null) {
-          throw new InternalServerErrorException(format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
-        }
-        walletDescriptionDto = objectMapper.readValue(body.string(), WalletDescriptionDto.class);
-        monitor.info("Fetched Wallets: " + walletDescriptionDto);
-      } catch (Exception e) {
-        monitor.severe(format("Error by fetching wallets at %s", url), e);
+      var response = httpClient.newCall(request).execute();
+      var body = response.body();
+      if (!response.isSuccessful() || body == null) {
+        throw new InternalServerErrorException(format("MIW responded with: %s %s", response.code(), body != null ? body.string() : ""));
       }
+      WalletDescriptionDto walletDescriptionDto = objectMapper.readValue(body.string(), WalletDescriptionDto.class);
+      fillRegistry(walletDescriptionDto.getVerifiableCredentials());
+      monitor.info("Saved Wallet data in registry");
     } catch (Exception e) {
       monitor.severe(format("Error in fetching AccessToken"), e);
     }
-    fillRegistry(walletDescriptionDto.getVerifiableCredentials());
   }
 
   @Override

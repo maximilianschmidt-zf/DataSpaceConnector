@@ -72,7 +72,6 @@ public class SSIIdentityServiceImpl implements IdentityService {
       } else{
         return Result.failure("Invalid Token");
       }
-
     } catch (JsonProcessingException e) {
       return Result.failure(e.getMessage());
     }
