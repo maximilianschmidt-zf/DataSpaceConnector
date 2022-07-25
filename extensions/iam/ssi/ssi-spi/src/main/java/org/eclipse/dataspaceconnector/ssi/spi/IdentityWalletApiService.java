@@ -23,13 +23,13 @@ package org.eclipse.dataspaceconnector.ssi.spi;
  */
 public interface IdentityWalletApiService {
 
-  public String issueVerifiablePresentation(String verifiableCredentialJson);
+  String issueVerifiablePresentation(String verifiableCredentialJson);
 
-  public String resolveDid(String did);
+  String resolveDid(String did);
 
-  public void fetchWalletDescription();
+  void fetchWalletDescription();
 
-  public String validateVerifablePresentation(String verifiablePresentationJson);
+  String validateVerifablePresentation(String verifiablePresentationJson);
 
-  public String getOwnerBPN();
+  String getOwnerBPN();
 }

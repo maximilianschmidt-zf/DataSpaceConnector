@@ -13,8 +13,6 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public class VerifiablePresentationRequestDto {

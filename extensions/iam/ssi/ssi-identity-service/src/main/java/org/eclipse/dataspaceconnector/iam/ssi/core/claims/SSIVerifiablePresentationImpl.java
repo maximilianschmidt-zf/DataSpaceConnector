@@ -21,7 +21,6 @@ import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationReques
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class SSIVerifiablePresentationImpl implements SSIVerifiablePresentation {

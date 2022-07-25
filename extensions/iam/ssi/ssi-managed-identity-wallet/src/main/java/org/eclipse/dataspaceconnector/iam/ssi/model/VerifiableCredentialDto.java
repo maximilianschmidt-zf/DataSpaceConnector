@@ -14,8 +14,6 @@
 package org.eclipse.dataspaceconnector.iam.ssi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.protobuf.Any;
-
 import java.util.List;
 import java.util.Map;
 

@@ -18,11 +18,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class WalletDescriptionDto {
-//"name": "CatenaX-Wallet",
-//"bpn": "BPNL000000000000",
-//"did": "did:indy:idunion:test:8E2bifh4jJaGwdp8Eiddy1",
-//"createdAt": "2022-05-25T07:11:36.675670",
-//"vcs": []
     private final String name;
 
     private final String bpn;

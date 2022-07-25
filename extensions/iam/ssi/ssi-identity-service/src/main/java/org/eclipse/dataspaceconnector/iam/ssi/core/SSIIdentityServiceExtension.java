@@ -13,8 +13,6 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core;
 
-//import org.eclipse.dataspaceconnector.iam.ssi.config.ManagedIdentityWalletConfig;
-
 import okhttp3.OkHttpClient;
 import org.eclipse.dataspaceconnector.api.datamanagement.configuration.DataManagementApiConfiguration;
 import org.eclipse.dataspaceconnector.iam.ssi.core.claims.SSIVerifiableCredentials;
@@ -22,8 +20,6 @@ import org.eclipse.dataspaceconnector.iam.ssi.core.claims.SSIVerifiableCredentia
 import org.eclipse.dataspaceconnector.iam.ssi.core.claims.SSIVerifiablePresentation;
 import org.eclipse.dataspaceconnector.iam.ssi.core.claims.SSIVerifiablePresentationImpl;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistry;
-import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistryImpl;
-import org.eclipse.dataspaceconnector.iam.ssi.wallet.ManagedIdentityWalletApiServiceImpl;
 import org.eclipse.dataspaceconnector.spi.WebService;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.system.Inject;

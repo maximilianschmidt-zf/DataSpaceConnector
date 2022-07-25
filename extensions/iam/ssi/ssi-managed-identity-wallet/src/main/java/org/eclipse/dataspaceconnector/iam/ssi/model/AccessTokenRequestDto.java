@@ -12,15 +12,11 @@
  */
 package org.eclipse.dataspaceconnector.iam.ssi.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 public class AccessTokenRequestDto {
-
-    //private String keycloakURL;
-
     private String cliend_id;
 
     private String client_secret;
@@ -33,10 +29,6 @@ public class AccessTokenRequestDto {
 
     public AccessTokenRequestDto() {
     }
-
-    //public String getKeycloakURL() {
-    //    return keycloakURL;
-    //}
 
     @JsonProperty("client_id")
     public String getCliendId() {
@@ -57,10 +49,6 @@ public class AccessTokenRequestDto {
         return scope;
     }
 
-    //public AccessTokenDescription getAccessToken() {
-    //    return accessToken;
-    //}
-
     @JsonPOJOBuilder(withPrefix = "")
     public static final class Builder{
         private final AccessTokenRequestDto dto;
@@ -69,11 +57,6 @@ public class AccessTokenRequestDto {
 
         @JsonCreator
         public static Builder newInstance(){ return new Builder();}
-
-//        public Builder keycloakURL(String keycloakURL){
-//            dto.keycloakURL = keycloakURL;
-//            return this;
-//        }
 
         public Builder clientID(String clientID){
             dto.cliend_id = clientID;

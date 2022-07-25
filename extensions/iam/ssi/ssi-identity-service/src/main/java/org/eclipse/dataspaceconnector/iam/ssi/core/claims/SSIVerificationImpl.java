@@ -15,16 +15,12 @@ package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import foundation.identity.jsonld.JsonLDException;
 import org.eclipse.dataspaceconnector.iam.ssi.core.did.SSIDidResolver;
 import org.eclipse.dataspaceconnector.iam.ssi.core.did.SSIDidResolverImpl;
-import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 
 /**
  * Verification of the signature validation from a given Verifiable Presentation
@@ -61,10 +57,5 @@ public class SSIVerificationImpl implements SSIVerification {
       throw new EdcException(e.getMessage());
     }
     return result;
-  }
-
-  @Override
-  public VerifiableCredentialDto verifyCredential(VerifiableCredentialDto vc) {
-    return null;
   }
 }

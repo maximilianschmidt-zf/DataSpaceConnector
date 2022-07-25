@@ -22,6 +22,6 @@ import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
  */
 public interface SSIVerifiablePresentation {
 
-  public VerifiablePresentationDto getPresentation(VerifiableCredentialDto vc) throws JsonProcessingException;
+  VerifiablePresentationDto getPresentation(VerifiableCredentialDto vc) throws JsonProcessingException;
 
 }

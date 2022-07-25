@@ -16,8 +16,6 @@ package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistry;
-import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialRegistryImpl;
-import org.eclipse.dataspaceconnector.iam.ssi.wallet.ManagedIdentityWalletApiServiceImpl;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.ssi.spi.IdentityWalletApiService;
 

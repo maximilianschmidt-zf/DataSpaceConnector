@@ -13,8 +13,6 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.model;
 
-import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
-
 public interface VerifiableCredentialRegistry {
 
   void addVerifableCredential(VerifiableCredentialDto vc);

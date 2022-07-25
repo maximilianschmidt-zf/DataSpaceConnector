@@ -13,8 +13,6 @@
 
 package org.eclipse.dataspaceconnector.iam.ssi.core.claims;
 
-
-import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiableCredentialDto;
 import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
 
 /**
@@ -22,7 +20,5 @@ import org.eclipse.dataspaceconnector.iam.ssi.model.VerifiablePresentationDto;
  */
 public interface SSIVerification {
 
-  public boolean verifyPresentation(VerifiablePresentationDto vp);
-
-  public VerifiableCredentialDto verifyCredential(VerifiableCredentialDto vc);
+  boolean verifyPresentation(VerifiablePresentationDto vp);
 }
